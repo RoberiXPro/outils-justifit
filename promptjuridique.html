@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OUTILS JUSTIFIT</title>
+    <meta charset="utf-8">
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f3f5f7;
+            font-family: Arial, sans-serif;
+            color: #333;
+            position: relative;
+        }
+        .navbar {
+            background-color: #001d50;
+            width: 100%;
+            padding: 10px 0;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+        .navbar a {
+            color: #ffffff;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .navbar a:hover {
+            background-color: #4c7b7b;
+            border-radius: 5px;
+        }
+        .container {
+            padding-top: 60px; /* Compense la barre de navigation */
+            background-color: #001d50;
+            padding: 30px;
+            border-radius: 10px;
+            width: 600px;
+            text-align: left;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .container5 {
+            background-color: #001d50;
+            border: 1px solid #d0d7de;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            border-radius: 10px;
+            width: 600px;
+            text-align: left;
+            color: #ffffff;
+        }
+        h2 {
+            color: #ffffff;
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+        label {
+            font-weight: 600;
+            display: block;
+            margin-top: 15px;
+            color: #ffffff;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+            box-sizing: border-box;
+            font-size: 14px;
+            background-color: #f8fafc;
+            color: #333;
+        }
+        input[type="button"], button {
+            background-color: #66a2a0;
+            border: none;
+            color: #ffffff;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+            font-weight: 600;
+            width: 100%;
+        }
+        button:hover, input[type="button"]:hover {
+            background-color: #4c7b7b;
+        }
+        #resultatContainer {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f0f4f8;
+            color: #333;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: 'Courier New', Courier, monospace;
+            max-height: 200px; /* Limite la hauteur pour le contenu replié */
+            overflow: hidden;
+            position: relative;
+            display: none;
+        }
+        #resultatContainer::before {
+            content: "Votre prompt ici :";
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+            color: #001d50;
+        }
+        .expand-btn {
+            text-align: center;
+            background-color: #66a2a0;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            margin-top: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            display: none;
+            width: 100%;
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4caf50;
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 14px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            z-index: 1000;
+        }
+        .notification.show {
+            opacity: 1;
+            visibility: visible;
+        }
+    </style>
+</head>
+<body>
+ <div class="navbar">
+        <a href="calltoaction.html">Call To Action</a>
+        <a href="ctabouton.html">CTA Bouton</a>
+        <a href="majusculeconvert.html">Convers MAJ</a>
+        <a href="nofollowcode.html">No Follow</a>
+        <a href="sourcearticle.html">Source</a>
+        <a href="promptjuridique.html">Prompt Juridique</a>
+    </div>
+<div class="notification" id="notification">Prompt copié dans le presse-papiers !</div>
+
+<div class="container5">
+    <form>
+        <h2>Vérification d'article juridique</h2>
+        <label for="title">Titre de l'article :</label>
+        <textarea id="title" placeholder="Collez le titre de l'article ici"></textarea>
+
+        <label for="content">Contenu de l'article :</label>
+        <textarea id="content" placeholder="Collez le contenu de l'article ici"></textarea>
+
+        <button type="button" onclick="generateAndCopyPrompt()">Copier le prompt</button>
+    </form>
+    
+    <!-- Conteneur pour afficher le code généré -->
+    <div id="resultatContainer"></div>
+    <button class="expand-btn" id="toggleButton" onclick="toggleContent()">Afficher plus</button>
+</div>
+
+<script>
+    function generateAndCopyPrompt() {
+        const title = document.getElementById('title').value;
+        const content = document.getElementById('content').value;
+
+        const prompt = `
+Quand il s'agit d'écrire du contenu, deux facteurs sont cruciaux, la "perplexité" et la "variabilité". La perplexité mesure la complexité du texte. Séparément, la variabilité compare les variations de phrases. Les humains ont tendance à écrire avec une plus grande variabilité, par exemple, avec des phrases plus longues ou complexes ainsi que des phrases plus courtes. Les phrases générées par les IA tendent à être plus uniformes. Par conséquent, lors de l'écriture du contenu que je vais vous demander de créer, j'ai besoin qu'il ait une bonne quantité de perplexité et de variabilité.
+Tu es un expert en droit, spécialisé en vérification de la qualité et de l'authenticité des informations juridiques. Ta tâche consiste à analyser le contenu de l'article suivant pour vérifier l'exactitude, l'actualité et la clarté des informations juridiques qu'il contient. Pour ce faire, tu dois utiliser des sites gouvernementaux français et des sources à jour de 2024. J'ai besoin des critiques positives et critiques négatives constructives. Voici l'article à analyser :
+
+[Titre de l'article]
+
+${title}
+
+[Texte de l'article]
+
+${content}
+
+Vérification de l'authenticité :
+- Utilise des sites gouvernementaux français et des sources à jour de 2024 pour vérifier que les lois, décrets et articles de code mentionnés dans l'article sont corrects et toujours en vigueur.
+- Vérifie que les références à des jurisprudences ou des décisions de justice sont exactes et bien documentées en consultant des sources actuelles.
+
+Vérification de l'actualité :
+- Assure-toi que les informations fournies ne sont pas obsolètes en utilisant des sites et des sources de 2024.
+- Identifie toute législation ou réglementation récente qui pourrait affecter les informations présentées.
+
+Vérification de la clarté :
+- Identifie les phrases ou sections qui pourraient être mal exprimées ou ambiguës.
+- Propose des modifications pour améliorer la clarté et la précision de l'article.
+- Critique négative s'il y en a pour aider à améliorer.
+- Identifie si l'article est utile (score de 1 à 100).
+- Précise si l'article a besoin d'une simple retouche ou d'une réécriture entière.
+
+Commentaire général :
+- Fournis un retour général sur la qualité et l'exactitude de l'article.
+- Indique si l'article est prêt pour publication ou si des modifications supplémentaires sont nécessaires.
+Merci de fournir une réponse détaillée pour chaque point ci-dessus.
+`;
+
+        const codeContainer = document.getElementById("resultatContainer");
+        codeContainer.style.display = "block";
+        codeContainer.textContent = prompt;
+
+        const toggleButton = document.getElementById("toggleButton");
+        toggleButton.style.display = "inline-block";
+        toggleButton.textContent = "Afficher plus";
+
+        navigator.clipboard.writeText(prompt).then(() => {
+            showNotification();
+        }).catch(err => {
+            console.error('Erreur lors de la copie : ', err);
+        });
+    }
+
+    function showNotification() {
+        const notification = document.getElementById('notification');
+        notification.classList.add('show');
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 2000);
+    }
+
+    function toggleContent() {
+        const codeContainer = document.getElementById("resultatContainer");
+        const toggleButton = document.getElementById("toggleButton");
+        if (codeContainer.style.maxHeight === "200px") {
+            codeContainer.style.maxHeight = "none";
+            toggleButton.textContent = "Réduire";
+        } else {
+            codeContainer.style.maxHeight = "200px";
+            toggleButton.textContent = "Afficher plus";
+        }
+    }
+</script>
+</body>
+</html>

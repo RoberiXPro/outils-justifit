@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OUTILS JUSTIFIT</title>
+    <meta charset="utf-8">
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f3f5f7;
+            font-family: Arial, sans-serif;
+            color: #333;
+            position: relative;
+        }
+        .navbar {
+            background-color: #001d50;
+            width: 100%;
+            padding: 10px 0;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+        .navbar a {
+            color: #ffffff;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .navbar a:hover {
+            background-color: #4c7b7b;
+            border-radius: 5px;
+        }
+        .container {
+            padding-top: 60px; /* Compense la barre de navigation */
+            background-color: #001d50;
+            padding: 30px;
+            border-radius: 10px;
+            width: 600px;
+            text-align: left;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .container1 {
+            background-color: #001d50;
+            border: 1px solid #d0d7de;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            border-radius: 10px;
+            width: 600px;
+            text-align: left;
+            color: #ffffff;
+        }
+        h1 {
+            color: #ffd700;
+            font-size: 26px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        h2 {
+            color: #ffffff;
+            font-size: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+        label {
+            font-weight: 600;
+            margin-top: 15px;
+            display: block;
+            color: #ffffff;
+        }
+        textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        input[type="button"], button {
+            background-color: #66a2a0;
+            border: none;
+            color: #ffffff;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+            font-weight: 600;
+            width: 100%;
+        }
+        input[type="button"]:hover, button:hover {
+            background-color: #4c7b7b;
+        }
+        .separator {
+            margin: 20px 0;
+            border-bottom: 1px solid #ffffff;
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4caf50;
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 14px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            z-index: 10;
+        }
+        .notification.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        #generatedCodeContainer {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f0f4f8;
+            color: #333;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Courier New', Courier, monospace;
+            display: none;
+        }
+        #generatedCodeContainer::before {
+            content: "Votre code ici :";
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+            color: #001d50;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="calltoaction.html">Call To Action</a>
+        <a href="ctabouton.html">CTA Bouton</a>
+        <a href="majusculeconvert.html">Convers MAJ</a>
+        <a href="nofollowcode.html">No Follow</a>
+        <a href="sourcearticle.html">Source</a>
+        <a href="promptjuridique.html">Prompt Juridique</a>
+    </div>
+<div class="notification" id="notification">Texte copié dans le presse-papiers !</div>
+
+<div class="container1">
+    <form>
+        <h1>OUTILS JUSTIFIT</h1>
+        <div class="separator"></div>
+        <h2>CALL TO ACTION</h2>
+        
+        <input type="hidden" id="action1" name="action1" value='<div class="bloc-bonsavoir">'>
+
+        <label for="action3">Sélectionner l'appel à l'action :</label>
+        <select id="action3" name="action3">
+            <option value="Key Takeaway:">Key Takeaway:</option>
+            <option value="Bon à savoir :">Bon à savoir :</option>
+            <option value="À noter :">À noter :</option>
+            <option value="À savoir :">À savoir :</option>
+            <option value="Important :">Important :</option>
+            <option value="Nos conseils :">Nos conseils :</option>
+            <option value="Attention :">Attention :</option>
+            <option value="Remarque :">Remarque :</option>
+            <option value="Remember:">Remember:</option>
+            <option value="Beware:">Beware:</option>
+            <option value="Advice:">Advice:</option>
+            <option value="Caution:">Caution:</option>
+            <option value="Did you know?">Did you know?</option>
+            <option value="Exception:">Exception:</option>
+            <option value="Insight:">Insight:</option>
+            <option value="Tip:">Tip:</option>
+            <option value="Good to know:">Good to know:</option>
+            <option value="Word to the wise:">Word to the wise:</option>
+            <option value="Expert insight:">Expert insight:</option>
+            <option value="Pro tip:">Pro tip:</option>
+            <option value="Noteworthy:">Noteworthy:</option>
+            <option value="Key consideration:">Key consideration:</option>
+            <option value="Prudent approach:">Prudent approach:</option>
+            <option value="Practical consideration:">Practical consideration:</option>
+        </select>
+        
+        <input type="hidden" id="action4" name="action4" value='</div>'>
+        <input type="hidden" id="action5" name="action5" value='<div class="desc-bonsavoir">'>
+
+        <label for="question">Question ici :</label>
+        <textarea id="question" name="question" placeholder="Entrez votre question ici..."></textarea>
+        
+        <label for="action6">Texte ici :</label>
+        <textarea id="action6" name="action6" placeholder="Entrez le texte principal ici..."></textarea>
+        
+        <input type="hidden" id="action7" name="action7" value='</div></div>'>
+        <input type="button" value="Copier" onclick="calling()" rel="target_blank">
+        <div class="separator"></div>
+    </form>
+    <div id="generatedCodeContainer"></div>
+
+    <script>
+    function calling() {
+        var action1 = document.getElementById("action1").value;
+        var action3 = document.getElementById("action3").value;
+        var action4 = document.getElementById("action4").value;
+        var action5 = document.getElementById("action5").value;
+        var question = document.getElementById("question").value;
+        var action6 = document.getElementById("action6").value;
+        var action7 = document.getElementById("action7").value;
+        
+        var message;
+
+        if (action3 === "Key Takeaway:") {
+            message = action1 + '<h2 class="title-bonsavoir"><strong>' + action3 + '</strong></h2>' + action5;
+            if (question) {
+                message += "<strong>" + question + "</strong><br>";
+            }
+            message += action6 + action7;
+        } else {
+            message = action1 + '<div class="title-bonsavoir"><strong>' + action3 + '</strong></div>' + action5;
+            if (question) {
+                message += question + "<br>";
+            }
+            message += action6 + action7;
+        }
+
+        var textarea = document.createElement("textarea");
+        textarea.value = message;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        textarea.remove();
+
+        document.getElementById('generatedCodeContainer').textContent = message;
+        document.getElementById('generatedCodeContainer').style.display = 'block';
+        showNotification();
+    }
+
+    function showNotification() {
+        const notification = document.getElementById('notification');
+        notification.classList.add('show');
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 2000);
+    }
+    </script>
+</div>
+</body>
+</html>

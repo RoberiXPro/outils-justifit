@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OUTILS JUSTIFIT</title>
+    <meta charset="utf-8">
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f3f5f7;
+            font-family: Arial, sans-serif;
+            color: #333;
+            position: relative;
+        }
+        .navbar {
+            background-color: #001d50;
+            width: 100%;
+            padding: 10px 0;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+        .navbar a {
+            color: #ffffff;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .navbar a:hover {
+            background-color: #4c7b7b;
+            border-radius: 5px;
+        }
+        .container {
+            padding-top: 60px; /* Compense la barre de navigation */
+            background-color: #001d50;
+            padding: 30px;
+            border-radius: 10px;
+            width: 600px;
+            text-align: left;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .container6 {
+            background-color: #001d50;
+            border: 1px solid #d0d7de;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            border-radius: 10px;
+            width: 600px;
+            text-align: left;
+            color: #ffffff;
+        }
+        h2 {
+            color: #ffffff;
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+        label {
+            font-weight: 600;
+            display: block;
+            margin-top: 15px;
+            color: #ffffff;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+            box-sizing: border-box;
+            font-size: 14px;
+            background-color: #f8fafc;
+            color: #333;
+        }
+        input[type="button"], button {
+            background-color: #66a2a0;
+            border: none;
+            color: #ffffff;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+            font-weight: 600;
+            width: 100%;
+        }
+        input[type="button"]:hover, button:hover {
+            background-color: #4c7b7b;
+        }
+        #generatedCodeContainer {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f0f4f8;
+            color: #333;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: 'Courier New', Courier, monospace;
+            display: none;
+        }
+        #generatedCodeContainer::before {
+            content: "Votre code ici :";
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+            color: #001d50;
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4caf50;
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 14px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            z-index: 1000;
+        }
+        .notification.show {
+            opacity: 1;
+            visibility: visible;
+        }
+    </style>
+</head>
+<body>
+ <div class="navbar">
+        <a href="calltoaction.html">Call To Action</a>
+        <a href="ctabouton.html">CTA Bouton</a>
+        <a href="majusculeconvert.html">Convers MAJ</a>
+        <a href="nofollowcode.html">No Follow</a>
+        <a href="sourcearticle.html">Source</a>
+        <a href="promptjuridique.html">Prompt Juridique</a>
+    </div>
+<div class="notification" id="notification">Texte copié dans le presse-papiers !</div>
+
+<div class="container6">
+    <form>
+        <h2>NO FOLLOW CODE</h2>
+        <input type="hidden" id="follow1" name="follow1" value='<a href="'>
+
+        <label>Les mots clés sélectionnés ici</label>
+        <textarea id="follow5" name="follow5" placeholder="Entrez les mots clés"></textarea>
+
+        <input type="hidden" id="follow6" name="follow6" value='</a>'>
+
+        <label>Lien externe ici</label>
+        <textarea id="follow2" name="follow2" placeholder="Entrez l'URL ici"></textarea>
+
+        <input type="button" id="bouton" value="Copier" onclick="follow()">
+        <input type="hidden" id="follow3" name="follow3" value='" rel="nofollow noopener" target="_blank"'>
+        <input type="hidden" id="follow4" name="follow4" value=''>
+    </form>
+    
+    <!-- Conteneur pour afficher le code généré -->
+    <div id="generatedCodeContainer"></div>
+</div>
+
+<script>
+    function follow() {
+        const follow1 = document.getElementById("follow1").value;
+        const follow2 = document.getElementById("follow2").value;
+        const follow3 = document.getElementById("follow3").value;
+        const follow4 = document.getElementById("follow4").value;
+        const follow5 = document.getElementById("follow5").value;
+        const follow6 = document.getElementById("follow6").value;
+
+        const message = follow1 + follow2 + follow3 + follow4 + follow5 + follow6;
+        
+        // Affiche le code dans le conteneur stylisé
+        const codeContainer = document.getElementById("generatedCodeContainer");
+        codeContainer.style.display = "block";
+        codeContainer.textContent = message;
+
+        // Copier dans le presse-papiers
+        navigator.clipboard.writeText(message).then(() => {
+            showNotification();
+        }).catch(err => {
+            console.error('Erreur lors de la copie : ', err);
+        });
+    }
+
+    function showNotification() {
+        const notification = document.getElementById('notification');
+        notification.classList.add('show');
+        
+        // Cacher la notification après 2 secondes
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 2000);
+    }
+</script>
+</body>
+</html>

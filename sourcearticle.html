@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OUTILS JUSTIFIT</title>
+    <meta charset="utf-8">
+    <style>
+         body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f3f5f7;
+            font-family: Arial, sans-serif;
+            color: #333;
+            position: relative;
+        }
+        .navbar {
+            background-color: #001d50;
+            width: 100%;
+            padding: 10px 0;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+        .navbar a {
+            color: #ffffff;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .navbar a:hover {
+            background-color: #4c7b7b;
+            border-radius: 5px;
+        }
+        .container {
+            padding-top: 60px; /* Compense la barre de navigation */
+            background-color: #001d50;
+            padding: 30px;
+            border-radius: 10px;
+            width: 600px;
+            text-align: left;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .container4 {
+            background-color: #001d50;
+            border: 1px solid #d0d7de;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            border-radius: 10px;
+            width: 600px;
+            text-align: left;
+            color: #ffffff;
+        }
+        h2 {
+            color: #ffffff;
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+        .form-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #ffffff;
+        }
+        .form-group label {
+            flex: 0 0 80px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+        .form-group input[type="text"] {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+            background-color: #f8fafc;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        input[type="button"], button {
+            background-color: #66a2a0;
+            border: none;
+            color: #ffffff;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+            font-weight: 600;
+            width: 100%;
+        }
+        button:hover, input[type="button"]:hover {
+            background-color: #4c7b7b;
+        }
+        button.add-btn {
+            display: inline-block;
+            width: auto;
+            padding: 8px 12px;
+            margin-top: 10px;
+            background-color: #66a2a0;
+        }
+        button.add-btn:hover {
+            background-color: #4c7b7b;
+        }
+        .info-text {
+            font-size: 12px;
+            color: #d3dae3;
+            text-align: center;
+            margin-top: 15px;
+        }
+        #generatedCodeContainer {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f0f4f8;
+            color: #333;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: 'Courier New', Courier, monospace;
+            display: none;
+        }
+        #generatedCodeContainer::before {
+            content: "Votre code ici :";
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+            color: #001d50;
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4caf50;
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 14px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            z-index: 1000;
+        }
+        .notification.show {
+            opacity: 1;
+            visibility: visible;
+        }
+    </style>
+</head>
+<body>
+ <div class="navbar">
+        <a href="calltoaction.html">Call To Action</a>
+        <a href="ctabouton.html">CTA Bouton</a>
+        <a href="majusculeconvert.html">Convers MAJ</a>
+        <a href="nofollowcode.html">No Follow</a>
+        <a href="sourcearticle.html">Source</a>
+        <a href="promptjuridique.html">Prompt Juridique</a>
+    </div>
+<div class="notification" id="notification">Texte copié dans le presse-papiers !</div>
+
+<div class="container4">
+    <h2>Outils pour les Sources d'Articles</h2>
+    <form id="sourceForm">
+        <div id="fieldsContainer">
+            <div class="form-group">
+                <label for="url1">URL 1</label>
+                <input type="text" id="url1" name="url1" placeholder="Entrez l'URL" oninput="setDomainName('url1', 'input1')">
+                <label for="input1">Nom du site 1</label>
+                <input type="text" id="input1" name="input1" placeholder="Nom du site" readonly>
+            </div>
+        </div>
+        <button type="button" class="add-btn" onclick="addFields()">+</button>
+        <input type="button" value="Copier" onclick="controle()">
+    </form>
+    <div class="info-text">Cliquez sur "+" pour ajouter d'autres champs si nécessaire.</div>
+    
+    <!-- Conteneur pour afficher le code généré -->
+    <div id="generatedCodeContainer"></div>
+</div>
+
+<script>
+let fieldCount = 1; // Compteur pour suivre le nombre de groupes de champs
+
+function addFields() {
+    fieldCount++;
+    const fieldsContainer = document.getElementById("fieldsContainer");
+
+    // Créer un nouvel ensemble de champs pour l'URL et le nom du site
+    const newFieldGroup = document.createElement("div");
+    newFieldGroup.classList.add("form-group");
+
+    const labelUrl = document.createElement("label");
+    labelUrl.setAttribute("for", `url${fieldCount}`);
+    labelUrl.textContent = `URL ${fieldCount}`;
+    newFieldGroup.appendChild(labelUrl);
+
+    const inputUrl = document.createElement("input");
+    inputUrl.type = "text";
+    inputUrl.id = `url${fieldCount}`;
+    inputUrl.name = `url${fieldCount}`;
+    inputUrl.placeholder = "Entrez l'URL";
+    inputUrl.oninput = function() {
+        setDomainName(`url${fieldCount}`, `input${fieldCount}`);
+    };
+    newFieldGroup.appendChild(inputUrl);
+
+    const labelSite = document.createElement("label");
+    labelSite.setAttribute("for", `input${fieldCount}`);
+    labelSite.textContent = `Nom du site ${fieldCount}`;
+    newFieldGroup.appendChild(labelSite);
+
+    const inputSite = document.createElement("input");
+    inputSite.type = "text";
+    inputSite.id = `input${fieldCount}`;
+    inputSite.name = `input${fieldCount}`;
+    inputSite.placeholder = "Nom du site";
+    inputSite.readOnly = true;
+    newFieldGroup.appendChild(inputSite);
+
+    fieldsContainer.appendChild(newFieldGroup);
+}
+
+function controle() {
+    let inputs = [];
+    for (let i = 1; i <= fieldCount; i++) {
+        const name = document.getElementById(`input${i}`).value;
+        const url = document.getElementById(`url${i}`).value;
+        if (name && url) {
+            inputs.push(name + " -- " + url);
+        }
+    }
+    const message = "[article_sources list=\"" + inputs.join(" | ") + "\"]";
+
+    // Affiche le code généré
+    const codeContainer = document.getElementById("generatedCodeContainer");
+    codeContainer.style.display = "block";
+    codeContainer.textContent = message;
+
+    navigator.clipboard.writeText(message).then(() => {
+        showNotification();
+    }).catch(err => {
+        console.error('Erreur lors de la copie : ', err);
+    });
+}
+
+function setDomainName(urlId, inputId) {
+    const urlInput = document.getElementById(urlId);
+    const input = document.getElementById(inputId);
+    const url = urlInput.value;
+
+    if (url) {
+        const domainName = getDomainName(url);
+        input.value = domainName;
+    }
+}
+
+function getDomainName(url) {
+    let hostname;
+    if (url.indexOf("://") > -1) {
+        hostname = url.split('/')[2];
+    } else {
+        hostname = url.split('/')[0];
+    }
+    hostname = hostname.replace("www.", "");
+    const domain = hostname.split('.')[0];
+    const extension = hostname.split('.').slice(1).join('.');
+    return domain + '.' + extension;
+}
+
+function showNotification() {
+    const notification = document.getElementById('notification');
+    notification.classList.add('show');
+    
+    // Cacher la notification après 2 secondes
+    setTimeout(() => {
+        notification.classList.remove('show');
+    }, 2000);
+}
+</script>
+</body>
+</html>
