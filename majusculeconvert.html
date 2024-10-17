@@ -1,205 +1,244 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>OUTILS JUSTIFIT</title>
-    <meta charset="utf-8">
+    <title>RS-Villa - Room sécurisé</title>
+    <!-- Inclure Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
     <style>
-body {
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background-color: #f3f5f7;
-    font-family: Arial, sans-serif;
-    color: #333;
-    position: relative;
-    padding: 10px;
-}
-
-.container {
-    background-color: #001d50;
-    padding: 30px;
-    border-radius: 10px;
-    width: 90%;
-    max-width: 600px;
-    text-align: left;
-    color: #ffffff;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.navbar {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    background-color: #001d50;
-    width: 100%;
-    padding: 10px 0;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1000;
-}
-
-.navbar a {
-    color: #ffffff;
-    padding: 10px 20px;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-.navbar a:hover {
-    background-color: #4c7b7b;
-    border-radius: 5px;
-}
-
-@media (max-width: 768px) {
-    .container {
-        padding: 20px;
-    }
-    .navbar a {
-        padding: 10px;
-        font-size: 14px;
-    }
-    input[type="button"], button {
-        padding: 8px 16px;
-        font-size: 14px;
-    }
-}
-
-        .container2 {
-            background-color: #001d50;
-            border: 1px solid #d0d7de;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-            border-radius: 10px;
-            width: 600px;
-            text-align: left;
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #2e2e2e, #1f1f1f);
+            font-family: 'Arial', sans-serif;
             color: #ffffff;
+            margin: 0;
         }
-        h2 {
-            color: #ffffff;
-            font-size: 24px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-weight: 600;
-        }
-        input[type="button"], button {
-            background-color: #66a2a0;
-            border: none;
-            color: #ffffff;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-            margin-top: 20px;
-            font-weight: 600;
-            width: 100%;
-        }
-        input[type="button"]:hover, button:hover {
-            background-color: #4c7b7b;
-        }
-        input[type="text"] {
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            border-radius: 5px;
-            border: 1px solid #ced4da;
-            box-sizing: border-box;
-            font-size: 14px;
-            background-color: #f8fafc;
-        }
-        #resultatContainer {
-            margin-top: 20px;
+        #login-container, #chat-container {
+            width: 60%;
+            max-width: 600px;
+            background: rgba(60, 60, 60, 0.9);
             padding: 20px;
-            background-color: #f0f4f8;
-            color: #333;
-            border-radius: 8px;
-            font-size: 16px;
-            font-family: 'Courier New', Courier, monospace;
+            border-radius: 10px;
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
             display: none;
         }
-        #resultatContainer::before {
-            content: "Texte converti ici :";
-            font-weight: bold;
+        #login-container {
             display: block;
-            margin-bottom: 10px;
-            color: #001d50;
+            animation: fadeIn 0.5s ease;
         }
-        .notification {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #4caf50;
-            color: #ffffff;
-            padding: 10px 20px;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        input, button {
+            padding: 10px;
             border-radius: 5px;
-            font-size: 14px;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-            z-index: 1000;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
         }
-        .notification.show {
-            opacity: 1;
-            visibility: visible;
+        input {
+            width: 100%;
+            margin-bottom: 10px;
+            background-color: #444;
+            color: #fff;
+        }
+        button {
+            background-color: #5a5a5a;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #4c4c4c;
+        }
+        #clear-btn {
+            background-color: #ff5c5c;
+        }
+        #clear-btn:hover {
+            background-color: #ff3636;
+        }
+        #messages {
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: #2e2e2e;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .message {
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 5px;
+            word-wrap: break-word;
+            max-width: 70%;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+        }
+        .message.user1 {
+            background-color: #ec7063;
+            align-self: flex-start;
+            border-radius: 10px 10px 10px 0;
+        }
+        .message.user2 {
+            background-color: #9b59b6;
+            align-self: flex-end;
+            border-radius: 10px 10px 0 10px;
+        }
+        .icon {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+        h1 {
+            font-size: 2.5em;
+            color: #ffd700;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        footer {
+            margin-top: 10px;
+            font-size: 0.8em;
+            color: #bbb;
         }
     </style>
 </head>
 <body>
-<div class="navbar">
-    <a href="index.html">Call To Action</a>
-    <a href="ctabouton.html">CTA Bouton</a>
-    <a href="majusculeconvert.html">Convers MAJ</a>
-    <a href="nofollowcode.html">No Follow</a>
-    <a href="sourcearticle.html">Source</a>
-    <a href="promptjuridique.html">Prompt juridique</a>
-</div>
+    <h1>RS-Villa</h1>
 
-<div class="notification" id="notification">Texte copié dans le presse-papiers !</div>
+    <!-- Section de connexion -->
+    <div id="login-container">
+        <input type="text" id="username" placeholder="Votre pseudo" required><br>
+        <input type="text" id="room-name-input" placeholder="Nom de la Villa" required><br>
+        <input type="password" id="password-input" placeholder="Mot de passe" required><br>
+        <button onclick="joinRoom()">Entrez dans la Villa</button>
+    </div>
 
-<div class="container2">
-    <form>
-        <h2>Convertir en majuscules</h2>
-        <input type="text" id="inputText" placeholder="Entrez du texte en minuscules" />
-        <button type="button" onclick="convertirEnMajuscules()">Convertir</button>
-    </form>
-    
-    <!-- Conteneur pour afficher le texte converti -->
-    <div id="resultatContainer"></div>
-</div>
+    <!-- Section de chat -->
+    <div id="chat-container">
+        <div id="room-name-display" style="font-size: 1.2em; font-weight: bold; color: #ffd700; margin-bottom: 10px;"></div>
+        <div id="messages"></div>
+        <div id="input-section">
+            <input type="text" id="message-input" placeholder="Ecrivez un message">
+            <button onclick="sendMessage()">Envoyer</button>
+            <button id="clear-btn" onclick="clearChat()">Effacer</button>
+        </div>
+    </div>
 
-<script>
-    function convertirEnMajuscules() {
-        const input = document.getElementById('inputText').value;
-        const resultat = input.toUpperCase();
-        
-        // Affiche le texte converti dans le conteneur
-        const resultatContainer = document.getElementById('resultatContainer');
-        resultatContainer.style.display = "block";
-        resultatContainer.textContent = resultat;
+    <footer>RoberixPro 2024</footer>
 
-        // Copier dans le presse-papiers
-        navigator.clipboard.writeText(resultat).then(() => {
-            showNotification();
-        }).catch(err => {
-            console.error('Erreur lors de la copie : ', err);
+    <script>
+        // Configuration Firebase
+        var firebaseConfig = {
+            apiKey: "AIzaSyAN7IrOQfHYJAeO49I1EZxDfupv62Ew9XI",
+            authDomain: "madiko-rs.firebaseapp.com",
+            databaseURL: "https://madiko-rs-default-rtdb.firebaseio.com",
+            projectId: "madiko-rs",
+            storageBucket: "madiko-rs.appspot.com",
+            messagingSenderId: "746083664475",
+            appId: "1:746083664475:web:fe2d5628d20e385d06b57e",
+            measurementId: "G-EBWFWCMWFT"
+        };
+        firebase.initializeApp(firebaseConfig);
+
+        var db;
+        var username;
+
+        function joinRoom() {
+            username = document.getElementById("username").value;
+            var roomName = document.getElementById("room-name-input").value;
+            var password = document.getElementById("password-input").value;
+
+            db = firebase.database().ref("rooms/" + roomName);
+
+            db.child("password").once('value').then(function(snapshot) {
+                var dbPassword = snapshot.val();
+
+                if (dbPassword === null) {
+                    db.set({
+                        password: password,
+                        messages: {}
+                    });
+                    alert("Room créé avec succès !");
+                    document.getElementById("room-name-display").textContent = "Villa : " + roomName;
+                    switchToChat();
+                } else if (dbPassword === password) {
+                    alert("Connexion réussie !");
+                    document.getElementById("room-name-display").textContent = "Villa : " + roomName;
+                    switchToChat();
+                } else {
+                    alert("Mot de passe incorrect !");
+                }
+            });
+        }
+
+        function switchToChat() {
+            document.getElementById("login-container").style.display = "none";
+            document.getElementById("chat-container").style.display = "block";
+            loadMessages();
+        }
+
+        function sendMessage() {
+            var messageInput = document.getElementById("message-input");
+            var message = messageInput.value;
+            db.child("messages").push().set({ "user": username, "message": message });
+            messageInput.value = '';
+        }
+
+        function loadMessages() {
+            db.child("messages").on("child_added", function(snapshot) {
+                var data = snapshot.val();
+                var msgDiv = document.createElement("div");
+                msgDiv.className = (data.user === username ? "message user1" : "message user2");
+                msgDiv.textContent = data.user + ": " + data.message;
+
+                if (data.user === username) {
+                    var editBtn = document.createElement("button");
+                    editBtn.innerHTML = '<img src="https://i.postimg.cc/5Hxy8Vjw/modifier.png" alt="Modifier" class="icon">';
+                    editBtn.onclick = function() {
+                        var newMessage = prompt("Modifier le message :", data.message);
+                        if (newMessage) {
+                            db.child("messages/" + snapshot.key).update({ "message": newMessage });
+                            msgDiv.textContent = username + ": " + newMessage;
+                            msgDiv.appendChild(editBtn);
+                            msgDiv.appendChild(deleteBtn);
+                        }
+                    };
+
+                    var deleteBtn = document.createElement("button");
+                    deleteBtn.innerHTML = '<img src="https://i.postimg.cc/NK8LyMGs/supprimer.png" alt="Supprimer" class="icon">';
+                    deleteBtn.onclick = function() {
+                        db.child("messages/" + snapshot.key).remove();
+                        msgDiv.remove();
+                    };
+
+                    msgDiv.appendChild(editBtn);
+                    msgDiv.appendChild(deleteBtn);
+                }
+
+                document.getElementById("messages").appendChild(msgDiv);
+            });
+        }
+
+        function clearChat() {
+            db.child("messages").remove();
+            document.getElementById("messages").innerHTML = '';
+        }
+
+        document.getElementById("message-input").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                sendMessage();
+            }
         });
-    }
-
-    function showNotification() {
-        const notification = document.getElementById('notification');
-        notification.classList.add('show');
-        
-        // Cacher la notification après 2 secondes
-        setTimeout(() => {
-            notification.classList.remove('show');
-        }, 2000);
-    }
-</script>
+    </script>
     <footer style="margin-top: 20px; font-size: 0.8rem; color: #999; text-align: center;">
     &copy; RoberixPro 2024
 </footer>
