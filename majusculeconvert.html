@@ -134,111 +134,134 @@
 
     <footer>RoberixPro 2024</footer>
 
-    <script>
-        // Configuration Firebase
-        var firebaseConfig = {
-            apiKey: "AIzaSyAN7IrOQfHYJAeO49I1EZxDfupv62Ew9XI",
-            authDomain: "madiko-rs.firebaseapp.com",
-            databaseURL: "https://madiko-rs-default-rtdb.firebaseio.com",
-            projectId: "madiko-rs",
-            storageBucket: "madiko-rs.appspot.com",
-            messagingSenderId: "746083664475",
-            appId: "1:746083664475:web:fe2d5628d20e385d06b57e",
-            measurementId: "G-EBWFWCMWFT"
-        };
-        firebase.initializeApp(firebaseConfig);
+<script>
+    // Configuration Firebase
+    var firebaseConfig = {
+        apiKey: "AIzaSyAN7IrOQfHYJAeO49I1EZxDfupv62Ew9XI",
+        authDomain: "madiko-rs.firebaseapp.com",
+        databaseURL: "https://madiko-rs-default-rtdb.firebaseio.com",
+        projectId: "madiko-rs",
+        storageBucket: "madiko-rs.appspot.com",
+        messagingSenderId: "746083664475",
+        appId: "1:746083664475:web:fe2d5628d20e385d06b57e",
+        measurementId: "G-EBWFWCMWFT"
+    };
+    firebase.initializeApp(firebaseConfig);
 
-        var db;
-        var username;
+    var db;
+    var username;
 
-        function joinRoom() {
-            username = document.getElementById("username").value;
-            var roomName = document.getElementById("room-name-input").value;
-            var password = document.getElementById("password-input").value;
+    function joinRoom() {
+        username = document.getElementById("username").value;
+        var roomName = document.getElementById("room-name-input").value;
+        var password = document.getElementById("password-input").value;
 
-            db = firebase.database().ref("rooms/" + roomName);
+        db = firebase.database().ref("rooms/" + roomName);
 
-            db.child("password").once('value').then(function(snapshot) {
-                var dbPassword = snapshot.val();
-
-                if (dbPassword === null) {
-                    db.set({
-                        password: password,
-                        messages: {}
-                    });
-                    alert("Room créé avec succès !");
-                    document.getElementById("room-name-display").textContent = "Villa : " + roomName;
-                    switchToChat();
-                } else if (dbPassword === password) {
-                    alert("Connexion réussie !");
-                    document.getElementById("room-name-display").textContent = "Villa : " + roomName;
-                    switchToChat();
-                } else {
-                    alert("Mot de passe incorrect !");
-                }
-            });
-        }
-
-        function switchToChat() {
-            document.getElementById("login-container").style.display = "none";
-            document.getElementById("chat-container").style.display = "block";
-            loadMessages();
-        }
-
-        function sendMessage() {
-            var messageInput = document.getElementById("message-input");
-            var message = messageInput.value;
-            db.child("messages").push().set({ "user": username, "message": message });
-            messageInput.value = '';
-        }
-
-        function loadMessages() {
-            db.child("messages").on("child_added", function(snapshot) {
-                var data = snapshot.val();
-                var msgDiv = document.createElement("div");
-                msgDiv.className = (data.user === username ? "message user1" : "message user2");
-                msgDiv.textContent = data.user + ": " + data.message;
-
-                if (data.user === username) {
-                    var editBtn = document.createElement("button");
-                    editBtn.innerHTML = '<img src="https://i.postimg.cc/5Hxy8Vjw/modifier.png" alt="Modifier" class="icon">';
-                    editBtn.onclick = function() {
-                        var newMessage = prompt("Modifier le message :", data.message);
-                        if (newMessage) {
-                            db.child("messages/" + snapshot.key).update({ "message": newMessage });
-                            msgDiv.textContent = username + ": " + newMessage;
-                            msgDiv.appendChild(editBtn);
-                            msgDiv.appendChild(deleteBtn);
-                        }
-                    };
-
-                    var deleteBtn = document.createElement("button");
-                    deleteBtn.innerHTML = '<img src="https://i.postimg.cc/NK8LyMGs/supprimer.png" alt="Supprimer" class="icon">';
-                    deleteBtn.onclick = function() {
-                        db.child("messages/" + snapshot.key).remove();
-                        msgDiv.remove();
-                    };
-
-                    msgDiv.appendChild(editBtn);
-                    msgDiv.appendChild(deleteBtn);
-                }
-
-                document.getElementById("messages").appendChild(msgDiv);
-            });
-        }
-
-        function clearChat() {
-            db.child("messages").remove();
-            document.getElementById("messages").innerHTML = '';
-        }
-
-        document.getElementById("message-input").addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                event.preventDefault();
-                sendMessage();
+        db.child("password").once('value').then(function(snapshot) {
+            var dbPassword = snapshot.val();
+            
+            if (dbPassword === null) {
+                db.set({
+                    password: password,
+                    messages: {}
+                });
+                alert("Room créé avec succès !");
+                document.getElementById("room-name-display").textContent = "Villa : " + roomName;
+                switchToChat();
+            } else if (dbPassword === password) {
+                alert("Connexion réussie !");
+                document.getElementById("room-name-display").textContent = "Villa : " + roomName;
+                switchToChat();
+            } else {
+                alert("Mot de passe incorrect !");
             }
         });
-    </script>
+    }
+
+    function switchToChat() {
+        document.getElementById("login-container").style.display = "none";
+        document.getElementById("chat-container").style.display = "block";
+        loadMessages();
+    }
+
+    function sendMessage() {
+        var messageInput = document.getElementById("message-input");
+        var message = messageInput.value;
+        db.child("messages").push().set({ "user": username, "message": message });
+        messageInput.value = '';
+    }
+
+    function loadMessages() {
+        db.child("messages").on("child_added", function(snapshot) {
+            displayMessage(snapshot.key, snapshot.val());
+        });
+
+        db.child("messages").on("child_changed", function(snapshot) {
+            var msgDiv = document.getElementById(snapshot.key);
+            if (msgDiv) {
+                msgDiv.querySelector(".msg-text").textContent = username + ": " + snapshot.val().message;
+            }
+        });
+
+        db.child("messages").on("child_removed", function(snapshot) {
+            var msgDiv = document.getElementById(snapshot.key);
+            if (msgDiv) {
+                msgDiv.remove();
+            }
+        });
+    }
+
+    function displayMessage(key, data) {
+        var msgDiv = document.createElement("div");
+        msgDiv.id = key;
+        msgDiv.className = (data.user === username ? "message user1" : "message user2");
+
+        var textSpan = document.createElement("span");
+        textSpan.className = "msg-text";
+        textSpan.textContent = data.user + ": " + data.message;
+
+        msgDiv.appendChild(textSpan);
+
+        if (data.user === username) {
+            var editBtn = document.createElement("img");
+            editBtn.src = "https://i.postimg.cc/5Hxy8Vjw/modifier.png";
+            editBtn.className = "icon";
+            editBtn.style.cursor = "pointer";
+            editBtn.onclick = function() {
+                var newMessage = prompt("Modifier le message :", data.message);
+                if (newMessage) {
+                    db.child("messages/" + key).update({ "message": newMessage });
+                }
+            };
+
+            var deleteBtn = document.createElement("img");
+            deleteBtn.src = "https://i.postimg.cc/NK8LyMGs/supprimer.png";
+            deleteBtn.className = "icon";
+            deleteBtn.style.cursor = "pointer";
+            deleteBtn.onclick = function() {
+                db.child("messages/" + key).remove();
+            };
+
+            msgDiv.appendChild(editBtn);
+            msgDiv.appendChild(deleteBtn);
+        }
+
+        document.getElementById("messages").appendChild(msgDiv);
+    }
+
+    function clearChat() {
+        db.child("messages").remove();
+        document.getElementById("messages").innerHTML = '';
+    }
+
+    document.getElementById("message-input").addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            sendMessage();
+        }
+    });
+</script>
     <footer style="margin-top: 20px; font-size: 0.8rem; color: #999; text-align: center;">
     &copy; RoberixPro 2024
 </footer>
