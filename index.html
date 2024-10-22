@@ -143,6 +143,11 @@
     </style>
 </head>
 <body>
+
+<div class="notification" id="notification">Texte copié dans le presse-papiers !</div>
+
+<div class="container1">
+    <h1>OUTILS JUSTIFIT</h1>
     <div class="navbar">
         <a href="index.html">Call To Action</a>
         <a href="ctabouton.html">CTA Bouton</a>
@@ -151,105 +156,152 @@
         <a href="sourcearticle.html">Source</a>
         <a href="promptjuridique.html">Prompt Juridique</a>
     </div>
-<div class="notification" id="notification">Texte copié dans le presse-papiers !</div>
-
-<div class="container1">
     <form>
-        <h1>OUTILS JUSTIFIT</h1>
-        <div class="separator"></div>
-        <h2>CALL TO ACTION</h2>
-        
-        <input type="hidden" id="action1" name="action1" value='<div class="bloc-bonsavoir">'>
-
-        <label for="action3">Sélectionner l'appel à l'action :</label>
-        <select id="action3" name="action3">
-            <option value="Key Takeaway:">Key Takeaway:</option>
-            <option value="Bon à savoir :">Bon à savoir :</option>
-            <option value="À noter :">À noter :</option>
-            <option value="À savoir :">À savoir :</option>
-            <option value="Important :">Important :</option>
-            <option value="Nos conseils :">Nos conseils :</option>
-            <option value="Attention :">Attention :</option>
-            <option value="Remarque :">Remarque :</option>
-            <option value="Remember:">Remember:</option>
-            <option value="Beware:">Beware:</option>
-            <option value="Advice:">Advice:</option>
-            <option value="Caution:">Caution:</option>
-            <option value="Did you know?">Did you know?</option>
-            <option value="Exception:">Exception:</option>
-            <option value="Insight:">Insight:</option>
-            <option value="Tip:">Tip:</option>
-            <option value="Good to know:">Good to know:</option>
-            <option value="Word to the wise:">Word to the wise:</option>
-            <option value="Expert insight:">Expert insight:</option>
-            <option value="Pro tip:">Pro tip:</option>
-            <option value="Noteworthy:">Noteworthy:</option>
-            <option value="Key consideration:">Key consideration:</option>
-            <option value="Prudent approach:">Prudent approach:</option>
-            <option value="Practical consideration:">Practical consideration:</option>
+        <label for="language">Choisissez la langue :</label>
+        <select id="language" onchange="setLanguage()">
+            <option value="fr">Justifit FR</option>
+            <option value="uk">Justifit UK</option>
         </select>
-        
-        <input type="hidden" id="action4" name="action4" value='</div>'>
-        <input type="hidden" id="action5" name="action5" value='<div class="desc-bonsavoir">'>
 
-        <label for="question">Question ici :</label>
-        <textarea id="question" name="question" placeholder="Entrez votre question ici..."></textarea>
+        <label for="question">Collez votre texte ici :</label>
+        <textarea id="question" name="question" placeholder="Entrez votre texte ici..."></textarea>
         
-        <label for="action6">Texte ici :</label>
-        <textarea id="action6" name="action6" placeholder="Entrez le texte principal ici..."></textarea>
-        
-        <input type="hidden" id="action7" name="action7" value='</div></div>'>
-        <input type="button" value="Copier" onclick="calling()" rel="target_blank">
-        <div class="separator"></div>
+        <input type="button" value="Copier" onclick="calling()">
     </form>
     <div id="generatedCodeContainer"></div>
 
+    <!-- SCRIPT POUR JUSTIFIT FR -->
     <script>
-    function calling() {
-        var action1 = document.getElementById("action1").value;
-        var action3 = document.getElementById("action3").value;
-        var action4 = document.getElementById("action4").value;
-        var action5 = document.getElementById("action5").value;
-        var question = document.getElementById("question").value;
-        var action6 = document.getElementById("action6").value;
-        var action7 = document.getElementById("action7").value;
-        
-        var message;
+        function calling() {
+            var action1 = '<div class="bloc-bonsavoir">';
+            var action5 = '<div class="desc-bonsavoir">';
+            var action7 = '</div></div>';
+            var question = document.getElementById("question").value;
 
-        if (action3 === "Key Takeaway:") {
-            message = action1 + '<h2 class="title-bonsavoir"><strong>' + action3 + '</strong></h2>' + action5;
-            if (question) {
-                message += "<strong>" + question + "</strong><br>";
-            }
-            message += action6 + action7;
-        } else {
-            message = action1 + '<div class="title-bonsavoir"><strong>' + action3 + '</strong></div>' + action5;
-            if (question) {
-                message += question + "<br>";
-            }
-            message += action6 + action7;
+            // Liste des titres à détecter
+            var titlesList = [
+                "Key Takeaway", "Bon à savoir", "À noter", "À savoir", "Important", "Nos conseils", 
+                "Attention", "Remarque", "Remember", "Beware", "Advice", "Caution", "Did you know?",
+                "Exception", "Insight", "Tip", "Good to know", "Word to the wise", "Expert insight",
+                "Pro tip", "Noteworthy", "Key consideration", "Prudent approach", "Practical consideration", "Consideration"
+            ];
+
+            // Créer une expression régulière pour capturer les titres et leur contenu
+            var regex = new RegExp('(<strong>(' + titlesList.join('|') + '):</strong>)([^<\\n]*)', 'g');
+
+            // Remplacer chaque match avec le format souhaité
+            var result = question.replace(regex, function(match, fullMatch, title, content) {
+                return action1 + '<div class="title-bonsavoir"><strong>' + title + ':</strong></div>' +
+                       action5 + content.trim() + action7; // Utiliser content.trim() pour enlever les espaces supplémentaires
+            });
+
+            // Gérer la section "Points clés à retenir"
+            var pointsRegex = /<strong>Points clés à retenir\s*:\s*<\/strong>\s*<ul>([\s\S]*?)<\/ul>/g;
+            result = result.replace(pointsRegex, function(match, content) {
+                return '<blockquote><strong>POINTS CLÉS À RETENIR :</strong>' +
+                       '<ul>' + content + '</ul></blockquote>';
+            });
+
+            // Gérer la section "À retenir :"
+            var retenirRegex = /<strong>À retenir\s*:\s*([^<]+)<\/strong>\s*(<ul>([\s\S]*?)<\/ul>|([^<]+))/g;
+            result = result.replace(retenirRegex, function(match, question, listContent, _, paragraphContent) {
+                var formattedQuestion = '<h2><strong>À RETENIR : ' + question.trim() + '</strong></h2>';
+                var contentBlock;
+
+                // Vérifier si c'est suivi d'une liste à puce ou d'un paragraphe
+                if (listContent) {
+                    contentBlock = '<blockquote>' + formattedQuestion + listContent + '</blockquote>';
+                } else {
+                    contentBlock = '<blockquote>' + formattedQuestion + paragraphContent.trim() + '</blockquote>';
+                }
+
+                return contentBlock;
+            });
+
+            // Copier dans le presse-papiers et afficher
+            var textarea = document.createElement("textarea");
+            textarea.value = result;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand("copy");
+            textarea.remove();
+
+            // Afficher le résultat dans le conteneur
+            document.getElementById('generatedCodeContainer').textContent = result;
+            document.getElementById('generatedCodeContainer').style.display = 'block';
+            showNotification();
         }
 
-        var textarea = document.createElement("textarea");
-        textarea.value = message;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand("copy");
-        textarea.remove();
-
-        document.getElementById('generatedCodeContainer').textContent = message;
-        document.getElementById('generatedCodeContainer').style.display = 'block';
-        showNotification();
-    }
-
-    function showNotification() {
-        const notification = document.getElementById('notification');
-        notification.classList.add('show');
-        setTimeout(() => {
-            notification.classList.remove('show');
-        }, 2000);
-    }
+        function showNotification() {
+            const notification = document.getElementById('notification');
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 2000);
+        }
     </script>
+
+    <!-- SCRIPT POUR JUSTIFIT UK -->
+    <script>
+        function callingUK() {
+            var action1 = '<div class="bloc-bonsavoir">';
+            var action5 = '<div class="desc-bonsavoir">';
+            var action7 = '</div></div>';
+            var question = document.getElementById("question").value;
+
+            // Liste des titres à détecter
+            var titlesList = [
+                "Key Takeaway", "Bon à savoir", "À noter", "À savoir", "Important", "Nos conseils", 
+                "Attention", "Remarque", "Remember", "Beware", "Advice", "Caution", "Did you know?",
+                "Exception", "Insight", "Tip", "Good to know", "Word to the wise", "Expert insight",
+                "Pro tip", "Noteworthy", "Key consideration", "Prudent approach", "Practical consideration", "Consideration"
+            ];
+
+            // Créer une expression régulière pour capturer les titres et leur contenu
+            var regex = new RegExp('(<strong>(' + titlesList.join('|') + '):</strong>)([^<\\n]*)', 'g');
+
+            // Remplacer chaque match avec le format souhaité
+            var result = question.replace(regex, function(match, fullMatch, title, content) {
+                return action1 + '<div class="title-bonsavoir"><strong>' + title + ':</strong></div>' +
+                       action5 + content.trim() + action7; // Utiliser content.trim() pour enlever les espaces supplémentaires
+            });
+
+            // Copier dans le presse-papiers et afficher
+            var textarea = document.createElement("textarea");
+            textarea.value = result;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand("copy");
+            textarea.remove();
+
+            // Afficher le résultat dans le conteneur
+            document.getElementById('generatedCodeContainer').textContent = result;
+            document.getElementById('generatedCodeContainer').style.display = 'block';
+            showNotification();
+        }
+
+        function showNotification() {
+            const notification = document.getElementById('notification');
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 2000);
+        }
+    </script>
+
+    <script>
+        function setLanguage() {
+            const language = document.getElementById("language").value;
+            if (language === "fr") {
+                document.getElementById("question").value = ''; // Reset textarea
+                calling = calling; // Appel de la fonction pour FR
+            } else {
+                document.getElementById("question").value = ''; // Reset textarea
+                calling = callingUK; // Appel de la fonction pour UK
+            }
+        }
+    </script>
+
 </div>
     <footer style="margin-top: 20px; font-size: 0.8rem; color: #999; text-align: center;">
     &copy; RoberixPro 2024
