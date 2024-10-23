@@ -46,16 +46,6 @@
             color: #ffffff;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
-        .container1 {
-            background-color: #001d50;
-            border: 1px solid #d0d7de;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-            border-radius: 10px;
-            width: 600px;
-            text-align: left;
-            color: #ffffff;
-        }
         h1 {
             color: #ffd700;
             font-size: 26px;
@@ -75,15 +65,26 @@
             display: block;
             color: #ffffff;
         }
-        textarea, select {
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            border-radius: 5px;
-            border: 1px solid #ced4da;
-            box-sizing: border-box;
-            font-size: 14px;
-        }
+textarea {
+    width: 100%;
+    height: 400px; /* Ajustez la hauteur ici selon vos besoins */
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+    border: 1px solid #ced4da;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+    border: 1px solid #ced4da;
+    font-size: 14px;
+    /* Vous pouvez garder cette partie inchangée ou ajuster si nécessaire */
+}
         input[type="button"], button {
             background-color: #66a2a0;
             border: none;
@@ -99,10 +100,6 @@
         }
         input[type="button"]:hover, button:hover {
             background-color: #4c7b7b;
-        }
-        .separator {
-            margin: 20px 0;
-            border-bottom: 1px solid #ffffff;
         }
         .notification {
             position: fixed;
@@ -146,10 +143,10 @@
 
 <div class="notification" id="notification">Texte copié dans le presse-papiers !</div>
 
-<div class="container1">
+<div class="container">
     <h1>OUTILS JUSTIFIT</h1>
     <div class="navbar">
-        <a href="index.html">Call To Action</a>
+        <a href="calltoaction.html">Call To Action</a>
         <a href="ctabouton.html">CTA Bouton</a>
         <a href="majusculeconvert.html">Convers MAJ</a>
         <a href="nofollowcode.html">No Follow</a>
@@ -169,8 +166,7 @@
         <input type="button" value="Copier" onclick="calling()">
     </form>
     <div id="generatedCodeContainer"></div>
-
-    <!-- SCRIPT POUR JUSTIFIT FR -->
+<!-- Tous les scripts mélanger blockquote en haut et en bas, titlelist,et source-->
     <script>
         function calling() {
             var action1 = '<div class="bloc-bonsavoir">';
@@ -178,7 +174,22 @@
             var action7 = '</div></div>';
             var question = document.getElementById("question").value;
 
-            // Liste des titres à détecter
+            // Traitement de la section "Sources"
+            var sourcesRegex = /<strong>Sources\s*:\s*<\/strong>([\s\S]*?)(?=<strong>|$)/g;
+            var result = question.replace(sourcesRegex, function(match, sourceContent) {
+                const urls = sourceContent.match(/<a href="(.*?)">(.*?)<\/a>/g);
+                if (urls) {
+                    const formattedSources = urls.map(url => {
+                        const linkMatch = url.match(/<a href="(.*?)">(.*?)<\/a>/);
+                        const domain = new URL(linkMatch[1]).hostname.replace('www.', '');
+                        return `${domain} -- ${linkMatch[1]}`;
+                    }).join(' | ');
+                    return `[article_sources list="${formattedSources}"]`;
+                }
+                return '';
+            });
+
+            // Améliorer la détection des titleslist
             var titlesList = [
                 "Key Takeaway", "Bon à savoir", "À noter", "À savoir", "Important", "Nos conseils", 
                 "Attention", "Remarque", "Remember", "Beware", "Advice", "Caution", "Did you know?",
@@ -186,13 +197,11 @@
                 "Pro tip", "Noteworthy", "Key consideration", "Prudent approach", "Practical consideration", "Consideration"
             ];
 
-            // Créer une expression régulière pour capturer les titres et leur contenu
-            var regex = new RegExp('(<strong>(' + titlesList.join('|') + '):</strong>)([^<\\n]*)', 'g');
-
-            // Remplacer chaque match avec le format souhaité
-            var result = question.replace(regex, function(match, fullMatch, title, content) {
-                return action1 + '<div class="title-bonsavoir"><strong>' + title + ':</strong></div>' +
-                       action5 + content.trim() + action7; // Utiliser content.trim() pour enlever les espaces supplémentaires
+            titlesList.forEach(function(title) {
+                var regex = new RegExp(`(<strong>${title}\\s*:\\s*</strong>)([^<\\n]*)`, 'g');
+                result = result.replace(regex, function(match, fullMatch, content) {
+                    return `${action1}<div class="title-bonsavoir"><strong>${title}:</strong></div>${action5}${content.trim()}${action7}`;
+                });
             });
 
             // Gérer la section "Points clés à retenir"
@@ -239,57 +248,7 @@
                 notification.classList.remove('show');
             }, 2000);
         }
-    </script>
 
-    <!-- SCRIPT POUR JUSTIFIT UK -->
-    <script>
-        function callingUK() {
-            var action1 = '<div class="bloc-bonsavoir">';
-            var action5 = '<div class="desc-bonsavoir">';
-            var action7 = '</div></div>';
-            var question = document.getElementById("question").value;
-
-            // Liste des titres à détecter
-            var titlesList = [
-                "Key Takeaway", "Bon à savoir", "À noter", "À savoir", "Important", "Nos conseils", 
-                "Attention", "Remarque", "Remember", "Beware", "Advice", "Caution", "Did you know?",
-                "Exception", "Insight", "Tip", "Good to know", "Word to the wise", "Expert insight",
-                "Pro tip", "Noteworthy", "Key consideration", "Prudent approach", "Practical consideration", "Consideration"
-            ];
-
-            // Créer une expression régulière pour capturer les titres et leur contenu
-            var regex = new RegExp('(<strong>(' + titlesList.join('|') + '):</strong>)([^<\\n]*)', 'g');
-
-            // Remplacer chaque match avec le format souhaité
-            var result = question.replace(regex, function(match, fullMatch, title, content) {
-                return action1 + '<div class="title-bonsavoir"><strong>' + title + ':</strong></div>' +
-                       action5 + content.trim() + action7; // Utiliser content.trim() pour enlever les espaces supplémentaires
-            });
-
-            // Copier dans le presse-papiers et afficher
-            var textarea = document.createElement("textarea");
-            textarea.value = result;
-            document.body.appendChild(textarea);
-            textarea.select();
-            document.execCommand("copy");
-            textarea.remove();
-
-            // Afficher le résultat dans le conteneur
-            document.getElementById('generatedCodeContainer').textContent = result;
-            document.getElementById('generatedCodeContainer').style.display = 'block';
-            showNotification();
-        }
-
-        function showNotification() {
-            const notification = document.getElementById('notification');
-            notification.classList.add('show');
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 2000);
-        }
-    </script>
-
-    <script>
         function setLanguage() {
             const language = document.getElementById("language").value;
             if (language === "fr") {
@@ -301,9 +260,9 @@
             }
         }
     </script>
-
 </div>
-    <footer style="margin-top: 20px; font-size: 0.8rem; color: #999; text-align: center;">
+
+<footer style="margin-top: 20px; font-size: 0.8rem; color: #999; text-align: center;">
     &copy; RoberixPro 2024
 </footer>
 </body>
