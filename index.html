@@ -36,7 +36,7 @@
             background-color: #4c7b7b;
             border-radius: 5px;
         }
-        .container {
+        .container1 {
             padding-top: 60px; /* Compense la barre de navigation */
             background-color: #001d50;
             padding: 30px;
@@ -65,7 +65,7 @@
             display: block;
             color: #ffffff;
         }
-textarea {
+ textarea {
     width: 100%;
     height: 400px; /* Ajustez la hauteur ici selon vos besoins */
     padding: 10px;
@@ -143,7 +143,7 @@ select {
 
 <div class="notification" id="notification">Texte copié dans le presse-papiers !</div>
 
-<div class="container">
+<div class="container1">
     <h1>OUTILS JUSTIFIT</h1>
     <div class="navbar">
         <a href="calltoaction.html">Call To Action</a>
@@ -166,7 +166,10 @@ select {
         <input type="button" value="Copier" onclick="calling()">
     </form>
     <div id="generatedCodeContainer"></div>
-<!-- Tous les scripts mélanger blockquote en haut et en bas, titlelist,et source-->
+
+<!--Voici le code complet qui intègre tous les scripts fonctionnels, en ajoutant également la nouvelle fonctionnalité pour gérer le bouton CTA sans capturer le texte associé à l'URL. J'ai veillé à restaurer les scripts qui fonctionnaient bien pour les sections "À retenir", "Titleslist" et "Sources".-->
+
+
     <script>
         function calling() {
             var action1 = '<div class="bloc-bonsavoir">';
@@ -174,41 +177,20 @@ select {
             var action7 = '</div></div>';
             var question = document.getElementById("question").value;
 
-            // Traitement de la section "Sources"
-            var sourcesRegex = /<strong>Sources\s*:\s*<\/strong>([\s\S]*?)(?=<strong>|$)/g;
-            var result = question.replace(sourcesRegex, function(match, sourceContent) {
-                const urls = sourceContent.match(/<a href="(.*?)">(.*?)<\/a>/g);
-                if (urls) {
-                    const formattedSources = urls.map(url => {
-                        const linkMatch = url.match(/<a href="(.*?)">(.*?)<\/a>/);
-                        const domain = new URL(linkMatch[1]).hostname.replace('www.', '');
-                        return `${domain} -- ${linkMatch[1]}`;
-                    }).join(' | ');
-                    return `[article_sources list="${formattedSources}"]`;
-                }
-                return '';
-            });
+            // Détection des URLs spécifiques pour le bouton CTA
+            var ctabtnRegexA = /<a href="(https:\/\/www\.justifit\.fr\/avocats\/q\/[^\s]+)">[^<]*<\/a>/g;
+            var ctabtnRegexB = /<a href="(https:\/\/www\.justifit\.fr\/trouver\/avocats\/france\/[^\s]+)">[^<]*<\/a>/g;
 
-            // Améliorer la détection des titleslist
-            var titlesList = [
-                "Key Takeaway", "Bon à savoir", "À noter", "À savoir", "Important", "Nos conseils", 
-                "Attention", "Remarque", "Remember", "Beware", "Advice", "Caution", "Did you know?",
-                "Exception", "Insight", "Tip", "Good to know", "Word to the wise", "Expert insight",
-                "Pro tip", "Noteworthy", "Key consideration", "Prudent approach", "Practical consideration", "Consideration"
-            ];
-
-            titlesList.forEach(function(title) {
-                var regex = new RegExp(`(<strong>${title}\\s*:\\s*</strong>)([^<\\n]*)`, 'g');
-                result = result.replace(regex, function(match, fullMatch, content) {
-                    return `${action1}<div class="title-bonsavoir"><strong>${title}:</strong></div>${action5}${content.trim()}${action7}`;
-                });
-            });
+            var ctabtnMatchA = question.match(ctabtnRegexA);
+            var ctabtnMatchB = question.match(ctabtnRegexB);
+            var ctabtnUrl = ctabtnMatchA ? ctabtnMatchA[0].match(/href="([^"]+)"/)[1] : (ctabtnMatchB ? ctabtnMatchB[0].match(/href="([^"]+)"/)[1] : null);
 
             // Gérer la section "Points clés à retenir"
             var pointsRegex = /<strong>Points clés à retenir\s*:\s*<\/strong>\s*<ul>([\s\S]*?)<\/ul>/g;
-            result = result.replace(pointsRegex, function(match, content) {
-                return '<blockquote><strong>POINTS CLÉS À RETENIR :</strong>' +
-                       '<ul>' + content + '</ul></blockquote>';
+            var result = question.replace(pointsRegex, function(match, content) {
+                // Créer le code ctabtn si une URL est trouvée
+                var ctabtnCode = ctabtnUrl ? `[ctabtn url="${ctabtnUrl}" text="Trouvez mon avocat" target="_blank" follow="follow" color="blue"]` : '';
+                return ctabtnCode + '<blockquote><strong>POINTS CLÉS À RETENIR :</strong>' + '<ul>' + content + '</ul></blockquote>';
             });
 
             // Gérer la section "À retenir :"
@@ -227,7 +209,42 @@ select {
                 return contentBlock;
             });
 
-            // Copier dans le presse-papiers et afficher
+            // Améliorer la détection des titleslist
+            var titlesList = [
+                "Key Takeaway", "Bon à savoir", "À noter", "À savoir", "Important", "Nos conseils", 
+                "Attention", "Remarque", "Remember", "Beware", "Advice", "Caution", "Did you know?",
+                "Exception", "Insight", "Tip", "Good to know", "Word to the wise", "Expert insight",
+                "Pro tip", "Noteworthy", "Key consideration", "Prudent approach", "Practical consideration", "Consideration"
+            ];
+
+            titlesList.forEach(function(title) {
+                var regex = new RegExp(`(<strong>${title}\\s*:\\s*</strong>)([^<\\n]*)`, 'g');
+                result = result.replace(regex, function(match, fullMatch, content) {
+                    return action1 + '<div class="title-bonsavoir"><strong>' + title + ':</strong></div>' +
+                           action5 + content.trim() + action7;
+                });
+            });
+
+            // Gérer la section "Sources"
+            var sourcesRegex = /<strong>Sources\s*:\s*<\/strong>([\s\S]*?)(?=<strong>|$)/g;
+            result = result.replace(sourcesRegex, function(match, sourceContent) {
+                const urls = sourceContent.match(/<a href="(.*?)">(.*?)<\/a>/g);
+                if (urls) {
+                    const formattedSources = urls.map(url => {
+                        const linkMatch = url.match(/<a href="(.*?)">(.*?)<\/a>/);
+                        const domain = new URL(linkMatch[1]).hostname.replace('www.', '');
+                        return `${domain} -- ${linkMatch[1]}`;
+                    }).join(' | ');
+                    return `[article_sources list="${formattedSources}"]`;
+                }
+                return '';
+            });
+
+            // Affichage du résultat
+            document.getElementById('generatedCodeContainer').textContent = result;
+            document.getElementById('generatedCodeContainer').style.display = 'block';
+
+            // Copier le résultat dans le presse-papiers
             var textarea = document.createElement("textarea");
             textarea.value = result;
             document.body.appendChild(textarea);
@@ -235,9 +252,6 @@ select {
             document.execCommand("copy");
             textarea.remove();
 
-            // Afficher le résultat dans le conteneur
-            document.getElementById('generatedCodeContainer').textContent = result;
-            document.getElementById('generatedCodeContainer').style.display = 'block';
             showNotification();
         }
 
@@ -261,7 +275,6 @@ select {
         }
     </script>
 </div>
-
 <footer style="margin-top: 20px; font-size: 0.8rem; color: #999; text-align: center;">
     &copy; RoberixPro 2024
 </footer>
