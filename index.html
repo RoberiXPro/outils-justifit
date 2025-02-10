@@ -209,21 +209,21 @@ select {
                 return contentBlock;
             });
 
-            // Améliorer la détection des titleslist
-            var titlesList = [
-                "Key Takeaway", "Bon à savoir", "À noter", "À savoir", "Important", "Nos conseils", 
-                "Attention", "Remarque", "Remember", "Beware", "Advice", "Caution", "Did you know?",
-                "Exception", "Insight", "Tip", "Good to know", "Word to the wise", "Expert insight",
-                "Pro tip", "Noteworthy", "Key consideration", "Prudent approach", "Practical consideration", "Consideration"
-            ];
+// Améliorer la détection des titleslist
+var titlesList = [
+    "Key Takeaway", "Bon à savoir", "À noter", "À savoir", "Important", "Nos conseils", 
+    "Attention", "Remarque", "Remember", "Beware", "Advice", "Caution", "Did you know?",
+    "Exception", "Insight", "Tip", "Good to know", "Word to the wise", "Expert insight",
+    "Pro tip", "Noteworthy", "Key consideration", "Prudent approach", "Practical consideration", "Consideration"
+];
 
-            titlesList.forEach(function(title) {
-                var regex = new RegExp(`(<strong>${title}\\s*:\\s*</strong>)([^<\\n]*)`, 'g');
-                result = result.replace(regex, function(match, fullMatch, content) {
-                    return action1 + '<div class="title-bonsavoir"><strong>' + title + ':</strong></div>' +
-                           action5 + content.trim() + action7;
-                });
-            });
+titlesList.forEach(function(title) {
+    var regex = new RegExp(`(<strong>${title}\\s*:?\\s*</strong>)([^<\\n]*)`, 'g');
+    result = result.replace(regex, function(match, fullMatch, content) {
+        return action1 + '<div class="title-bonsavoir"><strong>' + title + ':</strong></div>' +
+               action5 + content.trim() + action7;
+    });
+});
 
             // Gérer la section "Sources"
             var sourcesRegex = /<strong>Sources\s*:\s*<\/strong>([\s\S]*?)(?=<strong>|$)/g;
