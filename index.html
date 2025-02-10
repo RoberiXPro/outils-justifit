@@ -167,6 +167,94 @@ select {
     </form>
     <div id="generatedCodeContainer"></div>
 
+    <!--VERSION MANUELLE-->
+     <h2>CALL TO ACTION</h2>
+        <input type="hidden" id="action1" name="action1" value='<div class="bloc-bonsavoir">'>
+        
+        <!-- Sélection Call to Action -->
+        <select id="action3" name="action3">
+            <option value="Key Takeaway:">Key Takeaway:</option>
+            <option value="Bon à savoir :">Bon à savoir :</option>
+            <option value="À noter :">À noter :</option>
+            <option value="À savoir :">À savoir :</option>
+            <option value="Important :">Important :</option>
+            <option value="Nos conseils :">Nos conseils :</option>
+            <option value="Attention :">Attention :</option>
+            <option value="Remarque :">Remarque :</option>
+            <option value="Remember:">Remember:</option>
+            <option value="Beware:">Beware:</option>
+            <option value="Advice:">Advice:</option>
+            <option value="Caution:">Caution:</option>
+            <option value="Did you know?">Did you know?</option>
+            <option value="Exception:">Exception:</option>
+            <option value="Insight:">Insight:</option>
+            <option value="Tip:">Tip:</option>
+            <option value="Good to know:">Good to know:</option>
+            <option value="Word to the wise:">Word to the wise:</option>
+            <option value="Expert insight:">Expert insight:</option>
+            <option value="Pro tip:">Pro tip:</option>
+            <option value="Noteworthy:">Noteworthy:</option>
+            <option value="Key consideration:">Key consideration:</option>
+            <option value="Prudent approach:">Prudent approach:</option>
+            <option value="Practical consideration:">Practical consideration:</option>
+        </select>
+        <input type="hidden" id="action4" name="action4" value='</div>'><br>
+        <input type="hidden" id="action5" name="action5" value='<div class="desc-bonsavoir">'><br>
+        
+        <!-- Champ pour ajouter une question -->
+        <label><strong>Question ici</strong></label><br>
+        <textarea id="question" name="question"></textarea><br>
+        
+        <!-- Champ pour ajouter le texte principal -->
+        <label><strong>Texte ici</strong></label><br>
+        <textarea id="action6" name="action6"></textarea><br>
+        
+        <input type="hidden" id="action7" name="action7" value='</div></div>'><br>
+        <input type="button" value="Copier" onclick="calling()" rel="target_blank"><br>
+        <label><strong>-------------------------------------------------------------------------</strong></label><br>
+    </form>
+	
+    <script>
+    function calling() {
+        var action1 = document.getElementById("action1").value;
+        var action3 = document.getElementById("action3").value; // Correction ici pour la sélection
+        var action4 = document.getElementById("action4").value;
+        var action5 = document.getElementById("action5").value;
+        var question = document.getElementById("question").value;
+        var action6 = document.getElementById("action6").value;
+        var action7 = document.getElementById("action7").value;
+        
+        var message;
+
+        // Vérifie si l'option "Key Takeaway" est sélectionnée
+        if (action3 === "Key Takeaway:") {
+            // Crée le message avec la balise <h2> et le texte de la question en gras
+            message = action1 + '<h2 class="title-bonsavoir"><strong>' + action3 + '</strong></h2>' + action5;
+            if (question) {
+                message += "<strong>" + question + "</strong><br>";
+            }
+            message += action6 + action7;
+        } else {
+            // Crée le message standard avec la balise par défaut
+            message = action1 + '<div class="title-bonsavoir"><strong>' + action3 + '</strong></div>' + action5;
+            if (question) {
+                message += question + "<br>";
+            }
+            message += action6 + action7;
+        }
+
+        // Affiche et copie le message généré
+        alert(message);
+        var textarea = document.createElement("textarea");
+        textarea.value = message;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        textarea.remove();
+    }
+    </script>
+</div>
+
 <!--Voici le code complet qui intègre tous les scripts fonctionnels, en ajoutant également la nouvelle fonctionnalité pour gérer le bouton CTA sans capturer le texte associé à l'URL.-->
 
 
