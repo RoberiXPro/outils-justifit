@@ -36,6 +36,11 @@
             background-color: #4c7b7b;
             border-radius: 5px;
         }
+        .container1 {
+            background-color: #66a2a0;
+            padding: 20px;
+            border-radius: 8px;
+        }
         .container {
             padding-top: 60px; /* Compense la barre de navigation */
             background-color: #001d50;
@@ -159,98 +164,96 @@
     <a href="sourcearticle.html">Source</a>
     <a href="promptjuridique.html">Prompt juridique</a>
 </div>
-<div class="notification" id="notification">Prompt copié dans le presse-papiers !</div>
-
-<div class="container5">
+<div class="container1">
     <form>
-        <h2>Vérification d'article juridique</h2>
-        <label for="title">Titre de l'article :</label>
-        <textarea id="title" placeholder="Collez le titre de l'article ici"></textarea>
-
-        <label for="content">Contenu de l'article :</label>
-        <textarea id="content" placeholder="Collez le contenu de l'article ici"></textarea>
-
-        <button type="button" onclick="generateAndCopyPrompt()">Copier le prompt</button>
+        <h1>OUTILS JUSTIFIT</h1>
+        <label><strong>-------------------------------------------------------------------------</strong></label>
+        <h2>CALL TO ACTION</h2>
+        <input type="hidden" id="action1" name="action1" value='<div class="bloc-bonsavoir">'>
+        
+        <!-- Sélection Call to Action -->
+        <select id="action3" name="action3">
+            <option value="Key Takeaway:">Key Takeaway:</option>
+            <option value="Bon à savoir :">Bon à savoir :</option>
+            <option value="À noter :">À noter :</option>
+            <option value="À savoir :">À savoir :</option>
+            <option value="Important :">Important :</option>
+            <option value="Nos conseils :">Nos conseils :</option>
+            <option value="Attention :">Attention :</option>
+            <option value="Remarque :">Remarque :</option>
+            <option value="Remember:">Remember:</option>
+            <option value="Beware:">Beware:</option>
+            <option value="Advice:">Advice:</option>
+            <option value="Caution:">Caution:</option>
+            <option value="Did you know?">Did you know?</option>
+            <option value="Exception:">Exception:</option>
+            <option value="Insight:">Insight:</option>
+            <option value="Tip:">Tip:</option>
+            <option value="Good to know:">Good to know:</option>
+            <option value="Word to the wise:">Word to the wise:</option>
+            <option value="Expert insight:">Expert insight:</option>
+            <option value="Pro tip:">Pro tip:</option>
+            <option value="Noteworthy:">Noteworthy:</option>
+            <option value="Key consideration:">Key consideration:</option>
+            <option value="Prudent approach:">Prudent approach:</option>
+            <option value="Practical consideration:">Practical consideration:</option>
+        </select>
+        <input type="hidden" id="action4" name="action4" value='</div>'><br>
+        <input type="hidden" id="action5" name="action5" value='<div class="desc-bonsavoir">'><br>
+        
+        <!-- Champ pour ajouter une question -->
+        <label><strong>Question ici</strong></label><br>
+        <textarea id="question" name="question"></textarea><br>
+        
+        <!-- Champ pour ajouter le texte principal -->
+        <label><strong>Texte ici</strong></label><br>
+        <textarea id="action6" name="action6"></textarea><br>
+        
+        <input type="hidden" id="action7" name="action7" value='</div></div>'><br>
+        <input type="button" value="Copier" onclick="calling()" rel="target_blank"><br>
+        <label><strong>-------------------------------------------------------------------------</strong></label><br>
     </form>
-    
-    <!-- Conteneur pour afficher le code généré -->
-    <div id="resultatContainer"></div>
-    <button class="expand-btn" id="toggleButton" onclick="toggleContent()">Afficher plus</button>
-</div>
+	
+    <script>
+    function calling() {
+        var action1 = document.getElementById("action1").value;
+        var action3 = document.getElementById("action3").value; // Correction ici pour la sélection
+        var action4 = document.getElementById("action4").value;
+        var action5 = document.getElementById("action5").value;
+        var question = document.getElementById("question").value;
+        var action6 = document.getElementById("action6").value;
+        var action7 = document.getElementById("action7").value;
+        
+        var message;
 
-<script>
-    function generateAndCopyPrompt() {
-        const title = document.getElementById('title').value;
-        const content = document.getElementById('content').value;
-
-        const prompt = `
-Quand il s'agit d'écrire du contenu, deux facteurs sont cruciaux, la "perplexité" et la "variabilité". La perplexité mesure la complexité du texte. Séparément, la variabilité compare les variations de phrases. Les humains ont tendance à écrire avec une plus grande variabilité, par exemple, avec des phrases plus longues ou complexes ainsi que des phrases plus courtes. Les phrases générées par les IA tendent à être plus uniformes. Par conséquent, lors de l'écriture du contenu que je vais vous demander de créer, j'ai besoin qu'il ait une bonne quantité de perplexité et de variabilité.
-Tu es un expert en droit, spécialisé en vérification de la qualité et de l'authenticité des informations juridiques. Ta tâche consiste à analyser le contenu de l'article suivant pour vérifier l'exactitude, l'actualité et la clarté des informations juridiques qu'il contient. Pour ce faire, tu dois utiliser des sites gouvernementaux français et des sources à jour de 2024. J'ai besoin des critiques positives et critiques négatives constructives. Voici l'article à analyser :
-
-[Titre de l'article]
-
-${title}
-
-[Texte de l'article]
-
-${content}
-
-Vérification de l'authenticité :
-- Utilise des sites gouvernementaux français et des sources à jour de 2024 pour vérifier que les lois, décrets et articles de code mentionnés dans l'article sont corrects et toujours en vigueur.
-- Vérifie que les références à des jurisprudences ou des décisions de justice sont exactes et bien documentées en consultant des sources actuelles.
-
-Vérification de l'actualité :
-- Assure-toi que les informations fournies ne sont pas obsolètes en utilisant des sites et des sources de 2024.
-- Identifie toute législation ou réglementation récente qui pourrait affecter les informations présentées.
-
-Vérification de la clarté :
-- Identifie les phrases ou sections qui pourraient être mal exprimées ou ambiguës.
-- Propose des modifications pour améliorer la clarté et la précision de l'article.
-- Critique négative s'il y en a pour aider à améliorer.
-- Base toi sur cet article de Google (https://developers.google.com/search/docs/fundamentals/creating-helpful-content?hl=fr) qui explique comment reconnaître un contenu utile (helpful) ou pas. Analyses l'article que je t'envoi et donnes un score de 1 à 100 pour me permettre de juger si c'est contenu utile (helpful) ou pas.  
-- Précise si l'article a besoin d'une simple retouche ou d'une réécriture entière.
-
-Commentaire général :
-- Fournis un retour général sur la qualité et l'exactitude de l'article.
-- Indique si l'article est prêt pour publication ou si des modifications supplémentaires sont nécessaires.
-Merci de fournir une réponse détaillée pour chaque point ci-dessus.
-`;
-
-        const codeContainer = document.getElementById("resultatContainer");
-        codeContainer.style.display = "block";
-        codeContainer.textContent = prompt;
-
-        const toggleButton = document.getElementById("toggleButton");
-        toggleButton.style.display = "inline-block";
-        toggleButton.textContent = "Afficher plus";
-
-        navigator.clipboard.writeText(prompt).then(() => {
-            showNotification();
-        }).catch(err => {
-            console.error('Erreur lors de la copie : ', err);
-        });
-    }
-
-    function showNotification() {
-        const notification = document.getElementById('notification');
-        notification.classList.add('show');
-        setTimeout(() => {
-            notification.classList.remove('show');
-        }, 2000);
-    }
-
-    function toggleContent() {
-        const codeContainer = document.getElementById("resultatContainer");
-        const toggleButton = document.getElementById("toggleButton");
-        if (codeContainer.style.maxHeight === "200px") {
-            codeContainer.style.maxHeight = "none";
-            toggleButton.textContent = "Réduire";
+        // Vérifie si l'option "Key Takeaway" est sélectionnée
+        if (action3 === "Key Takeaway:") {
+            // Crée le message avec la balise <h2> et le texte de la question en gras
+            message = action1 + '<h2 class="title-bonsavoir"><strong>' + action3 + '</strong></h2>' + action5;
+            if (question) {
+                message += "<strong>" + question + "</strong><br>";
+            }
+            message += action6 + action7;
         } else {
-            codeContainer.style.maxHeight = "200px";
-            toggleButton.textContent = "Afficher plus";
+            // Crée le message standard avec la balise par défaut
+            message = action1 + '<div class="title-bonsavoir"><strong>' + action3 + '</strong></div>' + action5;
+            if (question) {
+                message += question + "<br>";
+            }
+            message += action6 + action7;
         }
+
+        // Affiche et copie le message généré
+        alert(message);
+        var textarea = document.createElement("textarea");
+        textarea.value = message;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        textarea.remove();
     }
-</script>
+    </script>
+</div>
     <footer style="margin-top: 20px; font-size: 0.8rem; color: #999; text-align: center;">
     &copy; RoberiX 2025
 </footer>
