@@ -1,5 +1,5 @@
 /* Chat Widget - Vanilla JS + Firebase RTDB (v8)
-   Robuste: attend DOMContentLoaded avant d'insérer le panneau */
+   Fix: insertion séparée du panel et du bouton (plus de null.classList) */
 (function(){
   const FIREBASE_CONFIG = {
     apiKey: "AIzaSyAN7IrOQfHYJAeO49I1EZxDfupv62Ew9XI",
@@ -12,13 +12,10 @@
     measurementId: "G-EBWFWCMWFT"
   };
 
-  // Tiny helper: run when DOM is ready
+  // Run when DOM is ready
   function onReady(fn){
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", fn, { once: true });
-    } else {
-      fn();
-    }
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", fn, {once:true});
+    else fn();
   }
 
   // Load Firebase v8 if needed
@@ -43,7 +40,7 @@
     next();
   }
 
-  const WIDGET_HTML = `
+  const PANEL_HTML = `
   <aside class="chat-panel" id="jf-chat">
     <div class="chat-header">
       <div class="chat-title"><span class="dot"></span> <span>Salon #general</span></div>
@@ -66,9 +63,11 @@
       <input type="text" id="jf-username" placeholder="Entre ton pseudo pour rejoindre le chat…" maxlength="30"/>
       <button class="chat-btn" id="jf-join">Rejoindre</button>
     </div>
-  </aside>
-  <button class="chat-toggle" id="jf-toggle">Chat<span class="chat-unread" id="jf-unread" style="display:none">0</span></button>
-  `;
+  </aside>`;
+  const TOGGLE_HTML = `
+  <button class="chat-toggle" id="jf-toggle">Chat
+    <span class="chat-unread" id="jf-unread" style="display:none">0</span>
+  </button>`;
 
   // Inject CSS once
   function injectStyles(){
@@ -167,19 +166,19 @@
   function initUI(){
     injectStyles();
 
-    // S'assurer que le body existe (si script dans <head>)
+    // Body prêt
     const body = document.body || document.getElementsByTagName("body")[0];
     if (!body) { console.error("Body not ready"); return; }
 
-    // Crée le widget s'il n'existe pas déjà
-    if (!document.getElementById("jf-chat")) {
-      body.appendChild(el(WIDGET_HTML));
-    }
+    // Panel
+    let panel = document.getElementById("jf-chat");
+    if (!panel) { panel = el(PANEL_HTML); body.appendChild(panel); }
 
-    // Sélections + z-index de sécurité
-    const panel = document.getElementById("jf-chat");
-    const toggle = document.getElementById("jf-toggle");
-    if (!panel || !toggle) { console.error("Chat panel/toggle not found after injection"); return; }
+    // Toggle
+    let toggle = document.getElementById("jf-toggle");
+    if (!toggle) { toggle = el(TOGGLE_HTML); body.appendChild(toggle); }
+
+    // Sécurité superposition
     panel.classList.remove("minimized");
     panel.style.zIndex = "2147480000";
     toggle.style.zIndex = "2147480001";
@@ -210,7 +209,7 @@
 
   function initChat(){
     onReady(() => {
-      initUI(); // UI first (DOM ready)
+      initUI(); // Insère panel + bouton
 
       // Firebase + data bindings
       ensureFirebase(() => {
