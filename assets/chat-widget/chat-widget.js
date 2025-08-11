@@ -1,5 +1,5 @@
-
-/* Chat Widget - Vanilla JS + Firebase RTDB (v8) */
+/* Chat Widget - Vanilla JS + Firebase RTDB (v8)
+   Edition: ouvert par défaut + zIndex boosté pour éviter tout recouvrement */
 (function(){
   const FIREBASE_CONFIG = {
     apiKey: "AIzaSyAN7IrOQfHYJAeO49I1EZxDfupv62Ew9XI",
@@ -35,7 +35,8 @@
   }
 
   const WIDGET_HTML = `
-  <aside class="chat-panel minimized" id="jf-chat">
+  <!-- OUVERT PAR DÉFAUT (pas de classe 'minimized') -->
+  <aside class="chat-panel" id="jf-chat">
     <div class="chat-header">
       <div class="chat-title"><span class="dot"></span> <span>Salon #general</span></div>
       <div class="chat-actions">
@@ -66,7 +67,7 @@
     if (document.getElementById("jf-chat-style")) return;
     const link = document.createElement("link");
     link.id = "jf-chat-style";
-    link.rel="stylesheet";
+    link.rel = "stylesheet";
     link.href = (window.JF_CHAT_ASSET_BASE || "./assets/chat-widget/") + "chat-widget.css";
     document.head.appendChild(link);
   }
@@ -91,15 +92,8 @@
   };
 
   function randColor(){ return ['#F59E0B','#10B981','#3B82F6','#8B5CF6','#EC4899','#F97316'][Math.floor(Math.random()*6)] }
-
-  function initials(name){
-    return name.split(/\s+/).map(p => p[0]||"").join("").slice(0,2).toUpperCase();
-  }
-
-  function scrollToBottom(){
-    const box = $("#jf-messages");
-    box.scrollTop = box.scrollHeight;
-  }
+  function initials(name){ return name.split(/\s+/).map(p => p[0]||"").join("").slice(0,2).toUpperCase(); }
+  function scrollToBottom(){ const box = $("#jf-messages"); box.scrollTop = box.scrollHeight; }
 
   function renderMessage(msgId, m){
     const me = state.username;
@@ -171,6 +165,14 @@
     injectStyles();
     document.body.appendChild(el(WIDGET_HTML));
 
+    // 🔒 Forcer l'ouverture et la superposition (au cas où un style global gêne)
+    const panel = document.getElementById("jf-chat");
+    const toggle = document.getElementById("jf-toggle");
+    panel.classList.remove("minimized");             // ouvert par défaut
+    panel.style.zIndex = "2147480000";               // très au-dessus
+    toggle.style.zIndex = "2147480001";              // bouton au-dessus du panel
+
+    // Min/max & toggle
     $("#jf-minmax").addEventListener("click", () => $("#jf-chat").classList.toggle("minimized"));
     $("#jf-toggle").addEventListener("click", () => {
       const wasMin = $("#jf-chat").classList.contains("minimized");
@@ -222,12 +224,9 @@
       }).catch(console.error);
     }
 
-    // Graceful close (no immediate removal, rely on heartbeat staleness)
+    // Best-effort update before closing (on reste "en ligne" quelques secondes via le heartbeat)
     window.addEventListener("beforeunload", () => {
-      try {
-        // Best-effort: set lastSeen right before closing
-        heartbeat(firebase.database());
-      } catch(e){}
+      try { heartbeat(firebase.database()); } catch(e){}
     });
 
     state.initialized = true;
