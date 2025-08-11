@@ -1,5 +1,5 @@
 /* Chat Widget - Vanilla JS + Firebase RTDB (v8)
-   Edition: ouvert par défaut + zIndex boosté pour éviter tout recouvrement */
+   Robuste: attend DOMContentLoaded avant d'insérer le panneau */
 (function(){
   const FIREBASE_CONFIG = {
     apiKey: "AIzaSyAN7IrOQfHYJAeO49I1EZxDfupv62Ew9XI",
@@ -12,22 +12,31 @@
     measurementId: "G-EBWFWCMWFT"
   };
 
-  // Inject Firebase SDK v8 if not present
+  // Tiny helper: run when DOM is ready
+  function onReady(fn){
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", fn, { once: true });
+    } else {
+      fn();
+    }
+  }
+
+  // Load Firebase v8 if needed
   function ensureFirebase(cb){
     if (window.firebase && firebase.apps && firebase.apps.length) return cb();
-    const scripts = [
+    const urls = [
       "https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js",
       "https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"
     ];
-    let i=0;
+    let i = 0;
     function next(){
-      if (i>=scripts.length) {
+      if (i >= urls.length) {
         if (!window.firebase) return console.error("Firebase SDK failed to load");
         if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
         cb(); return;
       }
-      const s = document.createElement('script');
-      s.src = scripts[i++];
+      const s = document.createElement("script");
+      s.src = urls[i++];
       s.onload = next;
       document.head.appendChild(s);
     }
@@ -35,7 +44,6 @@
   }
 
   const WIDGET_HTML = `
-  <!-- OUVERT PAR DÉFAUT (pas de classe 'minimized') -->
   <aside class="chat-panel" id="jf-chat">
     <div class="chat-header">
       <div class="chat-title"><span class="dot"></span> <span>Salon #general</span></div>
@@ -62,7 +70,7 @@
   <button class="chat-toggle" id="jf-toggle">Chat<span class="chat-unread" id="jf-unread" style="display:none">0</span></button>
   `;
 
-  // Styles
+  // Inject CSS once
   function injectStyles(){
     if (document.getElementById("jf-chat-style")) return;
     const link = document.createElement("link");
@@ -73,31 +81,24 @@
   }
 
   // DOM helpers
-  const $ = sel => document.querySelector(sel);
-  function el(html){
-    const div = document.createElement("div");
-    div.innerHTML = html.trim();
-    return div.firstChild;
-  }
+  const $ = s => document.querySelector(s);
+  function el(html){ const d=document.createElement("div"); d.innerHTML=html.trim(); return d.firstChild; }
 
-  // Session
   const ROOM = "general";
   let state = {
     username: localStorage.getItem("jf_chat_username") || "",
     userColor: localStorage.getItem("jf_chat_color") || "",
     unread: 0,
     isFocused: true,
-    lastSeenTs: Date.now(),
     initialized: false
   };
 
   function randColor(){ return ['#F59E0B','#10B981','#3B82F6','#8B5CF6','#EC4899','#F97316'][Math.floor(Math.random()*6)] }
   function initials(name){ return name.split(/\s+/).map(p => p[0]||"").join("").slice(0,2).toUpperCase(); }
-  function scrollToBottom(){ const box = $("#jf-messages"); box.scrollTop = box.scrollHeight; }
+  function scrollToBottom(){ const box = $("#jf-messages"); if (box) box.scrollTop = box.scrollHeight; }
 
   function renderMessage(msgId, m){
-    const me = state.username;
-    const mine = m.sender === me;
+    const mine = m.sender === state.username;
     const node = el(`
       <div class="chat-message" data-id="${msgId}">
         <div class="chat-avatar" style="background:${mine? '#1a2a46':'#1e293b'}; color:${state.userColor || '#cbd5e1'}">${initials(m.sender)}</div>
@@ -108,14 +109,14 @@
       </div>
     `);
     node.querySelector(".chat-text").textContent = m.text || "";
-    $("#jf-messages").appendChild(node);
+    $("#jf-messages")?.appendChild(node);
   }
 
   function renderUsers(list){
-    const box = $("#jf-users");
+    const box = $("#jf-users"); if (!box) return;
     box.innerHTML = "";
     list.forEach(u => {
-      const online = (Date.now() - u.lastSeen) < 25000; // 25s heartbeat
+      const online = (Date.now() - u.lastSeen) < 25000;
       const row = el(`
         <div class="user-row">
           <div class="user-avatar" style="color:${u.color || '#cbd5e1'}">${initials(u.name)}</div>
@@ -129,9 +130,10 @@
 
   function ensureUsernameUI(){
     const has = !!state.username;
-    $("#jf-login").style.display = has ? "none" : "grid";
-    $("#jf-input").disabled = !has;
-    $("#jf-send").disabled = !has;
+    const login = $("#jf-login"), input = $("#jf-input"), send = $("#jf-send");
+    if (login) login.style.display = has ? "none" : "grid";
+    if (input) input.disabled = !has;
+    if (send) send.disabled = !has;
   }
 
   function heartbeat(db){
@@ -157,80 +159,97 @@
 
   function updateUnread(){
     const badge = $("#jf-unread");
+    if (!badge) return;
     if (state.unread>0){ badge.style.display="inline-grid"; badge.textContent = String(state.unread); }
     else { badge.style.display="none"; }
   }
 
-  function initChat(){
+  function initUI(){
     injectStyles();
-    document.body.appendChild(el(WIDGET_HTML));
 
-    // 🔒 Forcer l'ouverture et la superposition (au cas où un style global gêne)
+    // S'assurer que le body existe (si script dans <head>)
+    const body = document.body || document.getElementsByTagName("body")[0];
+    if (!body) { console.error("Body not ready"); return; }
+
+    // Crée le widget s'il n'existe pas déjà
+    if (!document.getElementById("jf-chat")) {
+      body.appendChild(el(WIDGET_HTML));
+    }
+
+    // Sélections + z-index de sécurité
     const panel = document.getElementById("jf-chat");
     const toggle = document.getElementById("jf-toggle");
-    panel.classList.remove("minimized");             // ouvert par défaut
-    panel.style.zIndex = "2147480000";               // très au-dessus
-    toggle.style.zIndex = "2147480001";              // bouton au-dessus du panel
+    if (!panel || !toggle) { console.error("Chat panel/toggle not found after injection"); return; }
+    panel.classList.remove("minimized");
+    panel.style.zIndex = "2147480000";
+    toggle.style.zIndex = "2147480001";
 
-    // Min/max & toggle
-    $("#jf-minmax").addEventListener("click", () => $("#jf-chat").classList.toggle("minimized"));
-    $("#jf-toggle").addEventListener("click", () => {
-      const wasMin = $("#jf-chat").classList.contains("minimized");
-      $("#jf-chat").classList.remove("minimized");
+    // Min/Max
+    $("#jf-minmax")?.addEventListener("click", () => panel.classList.toggle("minimized"));
+    toggle.addEventListener("click", () => {
+      const wasMin = panel.classList.contains("minimized");
+      panel.classList.remove("minimized");
       if (wasMin){ state.unread = 0; updateUnread(); }
     });
 
     ensureUsernameUI();
-    $("#jf-join").addEventListener("click", () => {
-      const val = ($("#jf-username").value || "").trim().slice(0,30);
+
+    // Join
+    $("#jf-join")?.addEventListener("click", () => {
+      const val = ($("#jf-username")?.value || "").trim().slice(0,30);
       if (!val) return;
       state.username = val;
       if (!state.userColor){ state.userColor = randColor(); }
       localStorage.setItem("jf_chat_username", state.username);
       localStorage.setItem("jf_chat_color", state.userColor);
       ensureUsernameUI();
-      heartbeat(firebase.database());
-    });
-    $("#jf-username").addEventListener("keydown", (e)=>{ if (e.key==="Enter") $("#jf-join").click(); });
-
-    const db = firebase.database();
-    // Presence
-    subscribePresence(db);
-    if (state.username) heartbeat(db);
-
-    // Messages
-    const listRef = db.ref("rooms/"+ROOM+"/messages").limitToLast(200);
-    listRef.on("child_added", s => {
-      const m = s.val();
-      renderMessage(s.key, m);
-      scrollToBottom();
-      if (!state.isFocused || $("#jf-chat").classList.contains("minimized")){
-        state.unread += 1; updateUnread();
-      }
-    });
-
-    $("#jf-send").addEventListener("click", send);
-    $("#jf-input").addEventListener("keydown", (e)=>{ if (e.key==="Enter") send(); });
-
-    function send(){
-      if (!state.username){ $("#jf-username").focus(); return; }
-      const text = ($("#jf-input").value || "").trim();
-      if (!text) return;
-      db.ref("rooms/"+ROOM+"/messages").push({
-        text, sender: state.username, color: state.userColor || "#3B82F6",
-        createdAt: firebase.database.ServerValue.TIMESTAMP
-      }).then(()=>{
-        $("#jf-input").value="";
-      }).catch(console.error);
-    }
-
-    // Best-effort update before closing (on reste "en ligne" quelques secondes via le heartbeat)
-    window.addEventListener("beforeunload", () => {
       try { heartbeat(firebase.database()); } catch(e){}
     });
-
-    state.initialized = true;
+    $("#jf-username")?.addEventListener("keydown", (e)=>{ if (e.key==="Enter") $("#jf-join").click(); });
   }
 
-  ensureFirebase(initChat);
+  function initChat(){
+    onReady(() => {
+      initUI(); // UI first (DOM ready)
+
+      // Firebase + data bindings
+      ensureFirebase(() => {
+        const db = firebase.database();
+
+        // Presence
+        subscribePresence(db);
+        if (state.username) heartbeat(db);
+
+        // Messages stream
+        const listRef = db.ref("rooms/"+ROOM+"/messages").limitToLast(200);
+        listRef.on("child_added", s => {
+          const m = s.val();
+          renderMessage(s.key, m);
+          scrollToBottom();
+          if (!state.isFocused || $("#jf-chat")?.classList.contains("minimized")){
+            state.unread += 1; updateUnread();
+          }
+        });
+
+        // Send handlers
+        const doSend = () => {
+          if (!state.username){ $("#jf-username")?.focus(); return; }
+          const text = ($("#jf-input")?.value || "").trim();
+          if (!text) return;
+          db.ref("rooms/"+ROOM+"/messages").push({
+            text, sender: state.username, color: state.userColor || "#3B82F6",
+            createdAt: firebase.database.ServerValue.TIMESTAMP
+          }).then(()=>{ const i=$("#jf-input"); if(i) i.value=""; })
+            .catch(console.error);
+        };
+        $("#jf-send")?.addEventListener("click", doSend);
+        $("#jf-input")?.addEventListener("keydown", (e)=>{ if (e.key==="Enter") doSend(); });
+
+        // Best-effort update before closing
+        window.addEventListener("beforeunload", () => { try { heartbeat(db); } catch(e){} });
+      });
+    });
+  }
+
+  initChat();
 })();
