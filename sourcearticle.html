@@ -1,178 +1,115 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-    <title>OUTILS JUSTIFIT</title>
-    <meta charset="utf-8">
-    <style>
-         body {
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-color: #f3f5f7;
-            font-family: Arial, sans-serif;
-            color: #333;
-            position: relative;
-        }
-        .navbar {
-            background-color: #001d50;
-            width: 100%;
-            padding: 10px 0;
-            text-align: center;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1000;
-        }
-        .navbar a {
-            color: #ffffff;
-            padding: 10px 20px;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .navbar a:hover {
-            background-color: #4c7b7b;
-            border-radius: 5px;
-        }
-        .container {
-            padding-top: 60px; /* Compense la barre de navigation */
-            background-color: #001d50;
-            padding: 30px;
-            border-radius: 10px;
-            width: 600px;
-            text-align: left;
-            color: #ffffff;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-        .container4 {
-            background-color: #001d50;
-            border: 1px solid #d0d7de;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-            border-radius: 10px;
-            width: 600px;
-            text-align: left;
-            color: #ffffff;
-        }
-        h2 {
-            color: #ffffff;
-            font-size: 24px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-weight: 600;
-        }
-        .form-group {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            font-size: 14px;
-            color: #ffffff;
-        }
-        .form-group label {
-            flex: 0 0 80px;
-            font-weight: 600;
-            color: #ffffff;
-        }
-        .form-group input[type="text"] {
-            flex: 1;
-            padding: 8px 12px;
-            border-radius: 5px;
-            border: 1px solid #ced4da;
-            background-color: #f8fafc;
-            box-sizing: border-box;
-            font-size: 14px;
-        }
-        input[type="button"], button {
-            background-color: #66a2a0;
-            border: none;
-            color: #ffffff;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-            margin-top: 10px;
-            font-weight: 600;
-            width: 100%;
-        }
-        button:hover, input[type="button"]:hover {
-            background-color: #4c7b7b;
-        }
-        button.add-btn {
-            display: inline-block;
-            width: auto;
-            padding: 8px 12px;
-            margin-top: 10px;
-            background-color: #66a2a0;
-        }
-        button.add-btn:hover {
-            background-color: #4c7b7b;
-        }
-        .info-text {
-            font-size: 12px;
-            color: #d3dae3;
-            text-align: center;
-            margin-top: 15px;
-        }
-        #generatedCodeContainer {
-            margin-top: 20px;
-            padding: 20px;
-            background-color: #f0f4f8;
-            color: #333;
-            border-radius: 8px;
-            font-size: 16px;
-            font-family: 'Courier New', Courier, monospace;
-            display: none;
-        }
-        #generatedCodeContainer::before {
-            content: "Votre code ici :";
-            font-weight: bold;
-            display: block;
-            margin-bottom: 10px;
-            color: #001d50;
-        }
-        .notification {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #4caf50;
-            color: #ffffff;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 14px;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-            z-index: 1000;
-        }
-        .notification.show {
-            opacity: 1;
-            visibility: visible;
-        }
-        /* Bouton spécial Poser des questions */
-.navbar .ask-btn {
-  background: linear-gradient(135deg, #6a11cb, #2575fc); /* violet → bleu */
-  border-radius: 5px;
-  margin-left: 10px;
-  color: #fff !important;
-  font-weight: bold;
-  transition: all 0.3s ease;
-}
+  <meta charset="utf-8" />
+  <title>OUTILS JUSTIFIT — Sources d’Articles</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{
+      --bg:#f3f5f7;
+      --nav:#001d50;
+      --accent:#66a2a0;
+      --accent-hover:#4c7b7b;
+      --text:#333;
+      --radius:12px;
+      --shadow:0 6px 18px rgba(0,0,0,.15);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:Arial, Helvetica, sans-serif;
+      background:var(--bg); color:var(--text);
+    }
 
-/* Effet au survol */
-.navbar .ask-btn:hover {
-  background: linear-gradient(135deg, #2575fc, #6a11cb); /* inverse du dégradé */
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-}
+    /* Navbar */
+    .navbar{
+      position:fixed; top:0; left:0; right:0; z-index:1000;
+      background:var(--nav); padding:10px 12px;
+      display:flex; flex-wrap:wrap; gap:6px; justify-content:center;
+    }
+    .navbar a{
+      color:#fff; text-decoration:none; font-weight:700;
+      padding:10px 16px; border-radius:6px; transition:.25s;
+    }
+    .navbar a:hover{ background:var(--accent-hover) }
+    /* Bouton spécial Poser des questions */
+    .navbar .ask-btn{
+      background:linear-gradient(135deg,#6a11cb,#2575fc);
+      box-shadow:0 4px 12px rgba(0,0,0,.2);
+    }
+    .navbar .ask-btn:hover{
+      background:linear-gradient(135deg,#2575fc,#6a11cb);
+      transform:translateY(-1px);
+      box-shadow:0 8px 18px rgba(0,0,0,.25);
+    }
 
-    </style>
+    /* Layout */
+    .wrap{ padding:100px 16px 40px; display:flex; justify-content:center; }
+    .card{
+      background:var(--nav); color:#fff; width:100%; max-width:760px;
+      border-radius:var(--radius); padding:28px; box-shadow:var(--shadow);
+      animation:fadeIn .5s ease;
+    }
+    @keyframes fadeIn{from{opacity:0; transform:translateY(12px)} to{opacity:1; transform:translateY(0)}}
+    h2{
+      margin:0 0 8px; text-align:center; font-size:26px; font-weight:800;
+    }
+    .subtitle{ text-align:center; opacity:.9; font-size:14px; margin-bottom:18px; }
+    .hr{ height:3px; width:64px; background:var(--accent); border-radius:2px; margin:10px auto 20px; }
+
+    /* Form */
+    label{ display:block; font-weight:700; margin-bottom:8px; }
+    textarea, input[type="text"]{
+      width:100%; border:1px solid #ced4da; border-radius:8px;
+      background:#f8fafc; color:#333; padding:10px 12px; font-size:14px;
+      transition:border .25s, box-shadow .25s, transform .06s;
+    }
+    textarea{ min-height:140px; resize:vertical }
+    textarea:focus, input[type="text"]:focus{
+      outline:none; border-color:var(--accent);
+      box-shadow:0 0 0 3px rgba(102,162,160,.28);
+    }
+
+    .row{ display:grid; grid-template-columns: 1fr; gap:12px; margin-top:14px; }
+    .actions{ display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; }
+    .btn{
+      border:none; cursor:pointer; font-weight:800; letter-spacing:.2px;
+      padding:12px 18px; border-radius:10px; font-size:16px; color:#fff;
+      background:linear-gradient(135deg,var(--accent), var(--accent-hover));
+      transition:transform .18s, box-shadow .18s, filter .18s;
+      box-shadow:0 8px 16px rgba(0,0,0,.18);
+    }
+    .btn:hover{ transform:translateY(-1px); box-shadow:0 12px 22px rgba(0,0,0,.22); }
+    .btn:active{ transform:translateY(0); filter:saturate(1.05); }
+
+    .output{
+      margin-top:16px; background:#f0f4f8; color:#333;
+      border-radius:8px; padding:14px; font-family:"Courier New", monospace;
+      word-break:break-word;
+      display:none;
+    }
+    .muted{ color:#d3dae3; font-size:12px; text-align:center; margin-top:10px; }
+
+    /* Toast */
+    .toast{
+      position:fixed; top:20px; left:50%; transform:translateX(-50%);
+      background:#4caf50; color:#fff; padding:10px 18px;
+      border-radius:6px; font-size:14px; opacity:0; visibility:hidden;
+      transition:opacity .3s, visibility .3s; z-index:2000;
+      box-shadow:0 6px 14px rgba(0,0,0,.2);
+    }
+    .toast.show{ opacity:1; visibility:visible; }
+
+    footer{ text-align:center; color:#999; font-size:.85rem; padding:10px 12px 24px; }
+
+    @media (max-width:520px){
+      .card{ padding:20px }
+      .navbar a{ padding:8px 12px; font-size:.95rem }
+    }
+  </style>
 </head>
 <body>
-<div class="navbar">
+
+  <nav class="navbar">
     <a href="index.html">Call To Action</a>
     <a href="ctabouton.html">CTA Bouton</a>
     <a href="majusculeconvert.html">Convers MAJ</a>
@@ -180,131 +117,112 @@
     <a href="sourcearticle.html">Source</a>
     <a href="promptjuridique.html">ANCIEN OUTIL</a>
     <a href="poser-questions.html" class="ask-btn">Poser des questions</a>
-</div>
+  </nav>
 
-<div class="notification" id="notification">Texte copié dans le presse-papiers !</div>
+  <div id="toast" class="toast">Copié dans le presse‑papiers ✅</div>
 
-<div class="container4">
-    <h2>Outils pour les Sources d'Articles</h2>
-    <form id="sourceForm">
-        <div id="fieldsContainer">
-            <div class="form-group">
-                <label for="url1">URL 1</label>
-                <input type="text" id="url1" name="url1" placeholder="Entrez l'URL" oninput="setDomainName('url1', 'input1')">
-                <label for="input1">Nom du site 1</label>
-                <input type="text" id="input1" name="input1" placeholder="Nom du site" readonly>
-            </div>
+  <main class="wrap">
+    <section class="card">
+      <h2>Outils pour les Sources d’Articles</h2>
+      <div class="subtitle">Collez toutes vos URLs ci-dessous, on s’occupe du format.</div>
+      <div class="hr"></div>
+
+      <div class="row">
+        <div>
+          <label for="bulkUrls">Collez vos URLs (une par ligne)</label>
+          <textarea id="bulkUrls" placeholder="Exemple :
+https://www.gov.uk/make-will
+https://www.gov.uk/inherits-someone-dies-without-will
+https://www.citizensadvice.org.uk/family/death-and-wills/wills/
+https://www.gov.uk/applying-for-probate"></textarea>
         </div>
-        <button type="button" class="add-btn" onclick="addFields()">+</button>
-        <input type="button" value="Copier" onclick="controle()">
-    </form>
-    <div class="info-text">Cliquez sur "+" pour ajouter d'autres champs si nécessaire.</div>
-    
-    <!-- Conteneur pour afficher le code généré -->
-    <div id="generatedCodeContainer"></div>
-</div>
+      </div>
 
-<script>
-let fieldCount = 1; // Compteur pour suivre le nombre de groupes de champs
+      <div class="actions">
+        <button class="btn" onclick="generateShortcode()">Générer le shortcode</button>
+        <button class="btn" onclick="copyShortcode()">Copier</button>
+      </div>
 
-function addFields() {
-    fieldCount++;
-    const fieldsContainer = document.getElementById("fieldsContainer");
+      <div id="output" class="output"></div>
+      <div class="muted">Astuce : vous pouvez aussi coller des URLs sans “http(s)://”, elles seront corrigées automatiquement.</div>
+    </section>
+  </main>
 
-    // Créer un nouvel ensemble de champs pour l'URL et le nom du site
-    const newFieldGroup = document.createElement("div");
-    newFieldGroup.classList.add("form-group");
+  <footer>&copy; RoberiX 2025</footer>
 
-    const labelUrl = document.createElement("label");
-    labelUrl.setAttribute("for", `url${fieldCount}`);
-    labelUrl.textContent = `URL ${fieldCount}`;
-    newFieldGroup.appendChild(labelUrl);
-
-    const inputUrl = document.createElement("input");
-    inputUrl.type = "text";
-    inputUrl.id = `url${fieldCount}`;
-    inputUrl.name = `url${fieldCount}`;
-    inputUrl.placeholder = "Entrez l'URL";
-    inputUrl.oninput = function() {
-        setDomainName(`url${fieldCount}`, `input${fieldCount}`);
-    };
-    newFieldGroup.appendChild(inputUrl);
-
-    const labelSite = document.createElement("label");
-    labelSite.setAttribute("for", `input${fieldCount}`);
-    labelSite.textContent = `Nom du site ${fieldCount}`;
-    newFieldGroup.appendChild(labelSite);
-
-    const inputSite = document.createElement("input");
-    inputSite.type = "text";
-    inputSite.id = `input${fieldCount}`;
-    inputSite.name = `input${fieldCount}`;
-    inputSite.placeholder = "Nom du site";
-    inputSite.readOnly = true;
-    newFieldGroup.appendChild(inputSite);
-
-    fieldsContainer.appendChild(newFieldGroup);
-}
-
-function controle() {
-    let inputs = [];
-    for (let i = 1; i <= fieldCount; i++) {
-        const name = document.getElementById(`input${i}`).value;
-        const url = document.getElementById(`url${i}`).value;
-        if (name && url) {
-            inputs.push(name + " -- " + url);
-        }
+  <script>
+    function normalizeUrl(raw){
+      const t = (raw||'').trim();
+      if(!t) return '';
+      try{
+        const hasProto = /^https?:\/\//i.test(t);
+        const u = new URL(hasProto ? t : 'https://' + t);
+        // On retourne l'URL telle que saisie (avec https si absent)
+        return u.href;
+      }catch(e){
+        return '';
+      }
     }
-    const message = "[article_sources list=\"" + inputs.join(" | ") + "\"]";
 
-    // Affiche le code généré
-    const codeContainer = document.getElementById("generatedCodeContainer");
-    codeContainer.style.display = "block";
-    codeContainer.textContent = message;
-
-    navigator.clipboard.writeText(message).then(() => {
-        showNotification();
-    }).catch(err => {
-        console.error('Erreur lors de la copie : ', err);
-    });
-}
-
-function setDomainName(urlId, inputId) {
-    const urlInput = document.getElementById(urlId);
-    const input = document.getElementById(inputId);
-    const url = urlInput.value;
-
-    if (url) {
-        const domainName = getDomainName(url);
-        input.value = domainName;
+    function hostnameFrom(url){
+      try{
+        const u = new URL(url);
+        return u.hostname.replace(/^www\./,''); // ex: citizensadvice.org.uk / gov.uk
+      }catch(e){
+        return '';
+      }
     }
-}
 
-function getDomainName(url) {
-    let hostname;
-    if (url.indexOf("://") > -1) {
-        hostname = url.split('/')[2];
-    } else {
-        hostname = url.split('/')[0];
+    function generateShortcode(){
+      const raw = document.getElementById('bulkUrls').value || '';
+      const lines = raw.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+
+      // Normalisation, déduplication par URL normalisée, conservation de l’ordre
+      const seen = new Set();
+      const pairs = [];
+
+      for(const line of lines){
+        const normalized = normalizeUrl(line);
+        if(!normalized) continue;
+        if(seen.has(normalized)) continue;
+        seen.add(normalized);
+
+        const host = hostnameFrom(normalized);
+        if(!host) continue;
+
+        pairs.push(host + ' -- ' + normalized);
+      }
+
+      const shortcode = `[article_sources list="${pairs.join(' | ')}"]`;
+      const out = document.getElementById('output');
+      out.style.display = 'block';
+      out.textContent = shortcode;
+
+      return shortcode;
     }
-    hostname = hostname.replace("www.", "");
-    const domain = hostname.split('.')[0];
-    const extension = hostname.split('.').slice(1).join('.');
-    return domain + '.' + extension;
-}
 
-function showNotification() {
-    const notification = document.getElementById('notification');
-    notification.classList.add('show');
-    
-    // Cacher la notification après 2 secondes
-    setTimeout(() => {
-        notification.classList.remove('show');
-    }, 2000);
-}
-</script>
-    <footer style="margin-top: 20px; font-size: 0.8rem; color: #999; text-align: center;">
-    &copy; RoberiX 2025
-</footer>
+    function copyShortcode(){
+      const val = document.getElementById('output').textContent.trim() || generateShortcode();
+      if(!val) return;
+
+      navigator.clipboard.writeText(val).then(()=>{
+        showToast('Copié dans le presse‑papiers ✅');
+      }).catch(()=>{
+        // fallback
+        const ta = document.createElement('textarea');
+        ta.value = val; document.body.appendChild(ta); ta.select();
+        try{ document.execCommand('copy'); showToast('Copié dans le presse‑papiers ✅'); }
+        catch(e){}
+        ta.remove();
+      });
+    }
+
+    function showToast(msg){
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(()=> t.classList.remove('show'), 1800);
+    }
+  </script>
 </body>
 </html>
