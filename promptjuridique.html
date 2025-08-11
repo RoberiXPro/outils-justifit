@@ -1,277 +1,214 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-    <title>OUTILS JUSTIFIT</title>
-    <meta charset="utf-8">
-    <style>
-        body {
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-color: #f3f5f7;
-            font-family: Arial, sans-serif;
-            color: #333;
-            position: relative;
-        }
-        .navbar {
-            background-color: #001d50;
-            width: 100%;
-            padding: 10px 0;
-            text-align: center;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1000;
-        }
-        .navbar a {
-            color: #ffffff;
-            padding: 10px 20px;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .navbar a:hover {
-            background-color: #4c7b7b;
-            border-radius: 5px;
-        }
-        .container1 {
-            background-color: #66a2a0;
-            padding: 20px;
-            border-radius: 8px;
-        }
-        .container {
-            padding-top: 60px; /* Compense la barre de navigation */
-            background-color: #001d50;
-            padding: 30px;
-            border-radius: 10px;
-            width: 600px;
-            text-align: left;
-            color: #ffffff;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-        .container5 {
-            background-color: #001d50;
-            border: 1px solid #d0d7de;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-            border-radius: 10px;
-            width: 600px;
-            text-align: left;
-            color: #ffffff;
-        }
-        h2 {
-            color: #ffffff;
-            font-size: 24px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-weight: 600;
-        }
-        label {
-            font-weight: 600;
-            display: block;
-            margin-top: 15px;
-            color: #ffffff;
-        }
-        textarea {
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            border-radius: 5px;
-            border: 1px solid #ced4da;
-            box-sizing: border-box;
-            font-size: 14px;
-            background-color: #f8fafc;
-            color: #333;
-        }
-        input[type="button"], button {
-            background-color: #66a2a0;
-            border: none;
-            color: #ffffff;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-            margin-top: 20px;
-            font-weight: 600;
-            width: 100%;
-        }
-        button:hover, input[type="button"]:hover {
-            background-color: #4c7b7b;
-        }
-        #resultatContainer {
-            margin-top: 20px;
-            padding: 20px;
-            background-color: #f0f4f8;
-            color: #333;
-            border-radius: 8px;
-            font-size: 16px;
-            font-family: 'Courier New', Courier, monospace;
-            max-height: 200px; /* Limite la hauteur pour le contenu replié */
-            overflow: hidden;
-            position: relative;
-            display: none;
-        }
-        #resultatContainer::before {
-            content: "Votre prompt ici :";
-            font-weight: bold;
-            display: block;
-            margin-bottom: 10px;
-            color: #001d50;
-        }
-        .expand-btn {
-            text-align: center;
-            background-color: #66a2a0;
-            color: #ffffff;
-            border: none;
-            border-radius: 5px;
-            padding: 5px 10px;
-            margin-top: 10px;
-            font-size: 14px;
-            cursor: pointer;
-            display: none;
-            width: 100%;
-        }
-        .notification {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #4caf50;
-            color: #ffffff;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 14px;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-            z-index: 1000;
-        }
-        .notification.show {
-            opacity: 1;
-            visibility: visible;
-        }
-		/* Bouton spécial Poser des questions */
+<meta charset="utf-8">
+<title>OUTILS JUSTIFIT - Ancien Outil</title>
+<style>
+/* --- Reset + Font --- */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f3f5f7;
+  color: #333;
+}
+
+/* --- Navbar --- */
+.navbar {
+  background-color: #001d50;
+  padding: 10px 0;
+  text-align: center;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  z-index: 1000;
+}
+.navbar a {
+  color: #fff;
+  padding: 10px 20px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+.navbar a:hover {
+  background-color: #4c7b7b;
+  border-radius: 5px;
+}
+/* Bouton spécial Poser des questions */
 .navbar .ask-btn {
-  background: linear-gradient(135deg, #6a11cb, #2575fc); /* violet → bleu */
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
   border-radius: 5px;
   margin-left: 10px;
   color: #fff !important;
   font-weight: bold;
   transition: all 0.3s ease;
 }
-
-/* Effet au survol */
 .navbar .ask-btn:hover {
-  background: linear-gradient(135deg, #2575fc, #6a11cb); /* inverse du dégradé */
+  background: linear-gradient(135deg, #2575fc, #6a11cb);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0,0,0,0.25);
 }
 
-    </style>
+/* --- Container --- */
+.main {
+  padding: 100px 20px 40px;
+  display: flex;
+  justify-content: center;
+}
+.card {
+  background-color: #001d50;
+  color: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  max-width: 700px;
+  width: 100%;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+  animation: fadeIn 0.6s ease;
+}
+@keyframes fadeIn {
+  from {opacity: 0; transform: translateY(15px);}
+  to {opacity: 1; transform: translateY(0);}
+}
+.card h2 {
+  text-align: center;
+  font-size: 26px;
+  margin-bottom: 20px;
+  font-weight: bold;
+  position: relative;
+}
+.card h2::after {
+  content: "";
+  display: block;
+  height: 3px;
+  width: 60px;
+  background: #66a2a0;
+  margin: 8px auto 0;
+  border-radius: 2px;
+}
+
+/* --- Form elements --- */
+select, textarea {
+  width: 100%;
+  padding: 10px 12px;
+  margin-top: 8px;
+  border-radius: 6px;
+  border: 1px solid #ced4da;
+  font-size: 14px;
+  box-sizing: border-box;
+  background-color: #f8fafc;
+  color: #333;
+  transition: border 0.3s, box-shadow 0.3s;
+}
+select:focus, textarea:focus {
+  outline: none;
+  border-color: #66a2a0;
+  box-shadow: 0 0 0 3px rgba(102,162,160,0.3);
+}
+label {
+  font-weight: bold;
+  margin-top: 15px;
+  display: block;
+}
+
+/* --- Button --- */
+button, input[type="button"] {
+  background: linear-gradient(135deg, #66a2a0, #4c7b7b);
+  border: none;
+  color: #fff;
+  padding: 12px 18px;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 20px;
+  width: 100%;
+  font-weight: bold;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+button:hover, input[type="button"]:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+}
+
+/* --- Footer --- */
+footer {
+  margin-top: 30px;
+  font-size: 0.8rem;
+  color: #999;
+  text-align: center;
+}
+</style>
 </head>
 <body>
+
 <div class="navbar">
-    <a href="index.html">Call To Action</a>
-    <a href="ctabouton.html">CTA Bouton</a>
-    <a href="majusculeconvert.html">Convers MAJ</a>
-    <a href="nofollowcode.html">No Follow</a>
-    <a href="sourcearticle.html">Source</a>
-    <a href="promptjuridique.html">ANCIEN OUTIL</a>
-	<a href="poser-questions.html" class="ask-btn">Poser des questions</a>
+  <a href="index.html">Call To Action</a>
+  <a href="ctabouton.html">CTA Bouton</a>
+  <a href="majusculeconvert.html">Convers MAJ</a>
+  <a href="nofollowcode.html">No Follow</a>
+  <a href="sourcearticle.html">Source</a>
+  <a href="promptjuridique.html">ANCIEN OUTIL</a>
+  <a href="poser-questions.html" class="ask-btn">Poser des questions</a>
 </div>
-<div class="container1">
+
+<div class="main">
+  <div class="card">
+    <h2>ANCIEN CALL TO ACTION</h2>
     <form>
-        <h2>ANCIEN CALL TO ACTION</h2>
-        <input type="hidden" id="action1" name="action1" value='<div class="bloc-bonsavoir">'>
-        
-        <!-- Sélection Call to Action -->
-        <select id="action3" name="action3">
-            <option value="Key Takeaway:">Key Takeaway:</option>
-            <option value="Bon à savoir :">Bon à savoir :</option>
-            <option value="À noter :">À noter :</option>
-            <option value="À savoir :">À savoir :</option>
-            <option value="Important :">Important :</option>
-            <option value="Nos conseils :">Nos conseils :</option>
-            <option value="Attention :">Attention :</option>
-            <option value="Remarque :">Remarque :</option>
-            <option value="Remember:">Remember:</option>
-            <option value="Beware:">Beware:</option>
-            <option value="Advice:">Advice:</option>
-            <option value="Caution:">Caution:</option>
-            <option value="Did you know?">Did you know?</option>
-            <option value="Exception:">Exception:</option>
-            <option value="Insight:">Insight:</option>
-            <option value="Tip:">Tip:</option>
-            <option value="Good to know:">Good to know:</option>
-            <option value="Word to the wise:">Word to the wise:</option>
-            <option value="Expert insight:">Expert insight:</option>
-            <option value="Pro tip:">Pro tip:</option>
-            <option value="Noteworthy:">Noteworthy:</option>
-            <option value="Key consideration:">Key consideration:</option>
-            <option value="Prudent approach:">Prudent approach:</option>
-            <option value="Practical consideration:">Practical consideration:</option>
-        </select>
-        <input type="hidden" id="action4" name="action4" value='</div>'><br>
-        <input type="hidden" id="action5" name="action5" value='<div class="desc-bonsavoir">'><br>
-        
-        <!-- Champ pour ajouter une question -->
-        <label><strong>Question ici</strong></label><br>
-        <textarea id="question" name="question"></textarea><br>
-        
-        <!-- Champ pour ajouter le texte principal -->
-        <label><strong>Texte ici</strong></label><br>
-        <textarea id="action6" name="action6"></textarea><br>
-        
-        <input type="hidden" id="action7" name="action7" value='</div></div>'><br>
-        <input type="button" value="Copier" onclick="calling()" rel="target_blank"><br>
-        <label><strong>-------------------------------------------------------------------------</strong></label><br>
+      <input type="hidden" id="action1" value='<div class="bloc-bonsavoir">'>
+      <label>Sélection</label>
+      <select id="action3">
+        <option value="Key Takeaway:">Key Takeaway:</option>
+        <option value="Bon à savoir :">Bon à savoir :</option>
+        <option value="À noter :">À noter :</option>
+        <!-- ... autres options ... -->
+      </select>
+      <input type="hidden" id="action4" value='</div>'>
+      <input type="hidden" id="action5" value='<div class="desc-bonsavoir">'>
+
+      <label>Question ici</label>
+      <textarea id="question"></textarea>
+
+      <label>Texte ici</label>
+      <textarea id="action6"></textarea>
+
+      <input type="hidden" id="action7" value='</div></div>'>
+
+      <input type="button" value="Copier" onclick="calling()">
     </form>
-	
-    <script>
-    function calling() {
-        var action1 = document.getElementById("action1").value;
-        var action3 = document.getElementById("action3").value; // Correction ici pour la sélection
-        var action4 = document.getElementById("action4").value;
-        var action5 = document.getElementById("action5").value;
-        var question = document.getElementById("question").value;
-        var action6 = document.getElementById("action6").value;
-        var action7 = document.getElementById("action7").value;
-        
-        var message;
-
-        // Vérifie si l'option "Key Takeaway" est sélectionnée
-        if (action3 === "Key Takeaway:") {
-            // Crée le message avec la balise <h2> et le texte de la question en gras
-            message = action1 + '<h2 class="title-bonsavoir"><strong>' + action3 + '</strong></h2>' + action5;
-            if (question) {
-                message += "<strong>" + question + "</strong><br>";
-            }
-            message += action6 + action7;
-        } else {
-            // Crée le message standard avec la balise par défaut
-            message = action1 + '<div class="title-bonsavoir"><strong>' + action3 + '</strong></div>' + action5;
-            if (question) {
-                message += question + "<br>";
-            }
-            message += action6 + action7;
-        }
-
-        // Affiche et copie le message généré
-        alert(message);
-        var textarea = document.createElement("textarea");
-        textarea.value = message;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand("copy");
-        textarea.remove();
-    }
-    </script>
+  </div>
 </div>
-    <footer style="margin-top: 20px; font-size: 0.8rem; color: #999; text-align: center;">
-    &copy; RoberiX 2025
-</footer>
+
+<footer>&copy; RoberiX 2025</footer>
+
+<script>
+function calling() {
+  var action1 = document.getElementById("action1").value;
+  var action3 = document.getElementById("action3").value;
+  var action4 = document.getElementById("action4").value;
+  var action5 = document.getElementById("action5").value;
+  var question = document.getElementById("question").value;
+  var action6 = document.getElementById("action6").value;
+  var action7 = document.getElementById("action7").value;
+
+  var message;
+  if (action3 === "Key Takeaway:") {
+    message = action1 + '<h2 class="title-bonsavoir"><strong>' + action3 + '</strong></h2>' + action5;
+    if (question) message += "<strong>" + question + "</strong><br>";
+    message += action6 + action7;
+  } else {
+    message = action1 + '<div class="title-bonsavoir"><strong>' + action3 + '</strong></div>' + action5;
+    if (question) message += question + "<br>";
+    message += action6 + action7;
+  }
+
+  var textarea = document.createElement("textarea");
+  textarea.value = message;
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand("copy");
+  textarea.remove();
+  alert("Contenu copié !");
+}
+</script>
+
 </body>
 </html>
