@@ -132,6 +132,23 @@
             opacity: 1;
             visibility: visible;
         }
+        /* Bouton spécial Poser des questions */
+.navbar .ask-btn {
+  background: linear-gradient(135deg, #6a11cb, #2575fc); /* violet → bleu */
+  border-radius: 5px;
+  margin-left: 10px;
+  color: #fff !important;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+/* Effet au survol */
+.navbar .ask-btn:hover {
+  background: linear-gradient(135deg, #2575fc, #6a11cb); /* inverse du dégradé */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
     </style>
 </head>
 <body>
@@ -142,7 +159,7 @@
     <a href="nofollowcode.html">No Follow</a>
     <a href="sourcearticle.html">Source</a>
     <a href="promptjuridique.html">ANCIEN OUTIL</a>
-    <a href="poser-questions.html">Poser des questions ?</a>
+    <a href="poser-questions.html" class="ask-btn">Poser des questions</a>
 </div>
 
 <div class="notification" id="notification">Texte copié dans le presse-papiers !</div>
