@@ -220,42 +220,5 @@
     <footer style="margin-top: 20px; font-size: 0.8rem; color: #999; text-align: center;">
     &copy; RoberiX 2025
 </footer>
-<!-- === CHAT IFRAME (docké à droite) === -->
-<style>
-  #chatDock {
-    position: fixed; top: 0; right: 0; height: 100vh; width: 400px; max-width: 95vw;
-    border-left: 1px solid #1f2937; background: #0f172a; z-index: 2147480000;
-    box-shadow: -8px 0 24px rgba(0,0,0,.35); transform: translateX(0); transition: transform .25s ease;
-  }
-  #chatDock.min { transform: translateX(calc(100% - 50px)); }
-  #chatDock iframe { width: 100%; height: 100%; border: 0; background: #0f172a; }
-  #chatToggle {
-    position: fixed; right: 10px; bottom: 12px; height: 50px; width: 50px;
-    border: none; border-radius: 50%; font-weight: bold; font-size: 14px;
-    color: #fff; background: #3b82f6;
-    box-shadow: 0 4px 12px rgba(0,0,0,.25); cursor: pointer;
-    z-index: 2147480001; display: flex; align-items: center; justify-content: center;
-  }
-  @media (max-width: 900px){ #chatDock { width: 96vw; } }
-</style>
-
-<div id="chatDock" class="min">
-  <iframe id="chatFrame" src="https://roberixpro.github.io/madiko/" allow="clipboard-write; camera; microphone"></iframe>
-</div>
-<button id="chatToggle">💬</button>
-
-<script>
-  (function(){
-    var dock = document.getElementById('chatDock');
-    var btn  = document.getElementById('chatToggle');
-    if (localStorage.getItem('chat_min') === '0') dock.classList.remove('min');
-    btn.addEventListener('click', function(){
-      dock.classList.toggle('min');
-      localStorage.setItem('chat_min', dock.classList.contains('min') ? '1' : '0');
-    });
-  })();
-</script>
-<!-- === /CHAT IFRAME === -->
-
 </body>
 </html>
