@@ -55,7 +55,7 @@
       <div class="jf-chat__panel">
         <div class="jf-chat__feed" id="jfFeed"></div>
         <div class="jf-chat__composer">
-          <input class="jf-chat__input" id="jfInput" placeholder="Écrire un message… (Entrée pour envoyer)"/>
+          <textarea class="jf-chat__input" id="jfInput" rows="3" placeholder="Écrire un message… (Entrée = envoyer • Shift+Entrée = nouvelle ligne)"></textarea>
           <button class="jf-chat__send" id="jfSend">Envoyer</button>
         </div>
         <div class="jf-chat__meta">
@@ -93,11 +93,19 @@
     const sendBtn = $('#jfSend', root);
     const clearBtn = $('#jfClearAll', root);
 
+    // auto-resize du textarea
+    function autoGrow(el){
+      el.style.height = 'auto';
+      el.style.height = Math.min(el.scrollHeight, 140) + 'px';
+    }
+    input.addEventListener('input', ()=> autoGrow(input));
+    setTimeout(()=> autoGrow(input), 0);
+
     head.addEventListener('click', (e)=>{
       if(e.target===setNameBtn) return;
       root.classList.toggle('jf-chat--min');
       toggleBtn.textContent = root.classList.contains('jf-chat--min') ? '▲' : '▼';
-      if(!root.classList.contains('jf-chat--min')) hideBadge(); // on ouvre -> badge OFF
+      if(!root.classList.contains('jf-chat--min')) hideBadge();
     });
 
     setNameBtn.addEventListener('click', ()=>{
@@ -116,7 +124,6 @@
       $('#jfFeed', root).innerHTML = "";
     });
 
-    // Quand l'onglet redevient visible, on cache le badge
     document.addEventListener('visibilitychange', ()=>{
       if(!document.hidden){ hideBadge(); }
     });
@@ -131,7 +138,6 @@
       const m = snap.val() || {};
       addMsg(feed, { id: snap.key, ...m });
 
-      // Son + badge si message d'un autre utilisateur ET si onglet caché OU widget minimisé
       try {
         const fromSelf = (m.displayName || '').trim() === loadName().trim();
         const isHidden = document.hidden;
@@ -152,7 +158,7 @@
       <div class="jf-msg__avatar" title="${escapeHTML(m.displayName||'')}">${escapeHTML(avatar)}</div>
       <div class="jf-msg__bubble">
         <div><strong>${escapeHTML(m.displayName||'')}</strong></div>
-        <div>${linkify(m.text||'')}</div>
+        <div class="jf-msg__text">${linkify(m.text||'')}</div>
         <div class="jf-msg__meta">${fmtTime(m.at)}</div>
       </div>
     `;
