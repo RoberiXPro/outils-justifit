@@ -17,11 +17,19 @@
   const showBadge = ()=>{ const b=document.getElementById('jfBadge'); if(b) b.classList.remove('hide'); };
   const hideBadge = ()=>{ const b=document.getElementById('jfBadge'); if(b) b.classList.add('hide'); };
 
-  // Anti-spam audio
+  // Transforme les URLs en liens cliquables (avec échappement)
+  const linkify = (text = "") => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    return escapeHTML(text).replace(urlRegex, url =>
+      `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`
+    );
+  };
+
+  // Anti-spam audio (cooldown)
   let __lastPingAt = 0;
   function safePing(){
     const now = Date.now();
-    if (now - __lastPingAt < 3000) return; // 3s mini
+    if (now - __lastPingAt < 3000) return; // 3s mini entre 2 sons
     __lastPingAt = now;
     const ping = document.getElementById('jfPing');
     if (ping && CFG.notificationSoundUrl) {
@@ -35,7 +43,10 @@
     root.className = 'jf-chat jf-chat--min';
     root.innerHTML = `
       <div class="jf-chat__head" id="jfHead">
-        <div class="jf-chat__title">💬 POSER DES QUESTION ICI <span id="jfBadge" class="jf-badge hide" aria-label="Nouveau message"></span></div>
+        <div class="jf-chat__title">
+          💬 POSER DES QUESTION ICI
+          <span id="jfBadge" class="jf-badge hide" aria-label="Nouveau message"></span>
+        </div>
         <div>
           <button class="jf-chat__btn" id="jfSetNameBtn">PSEUDO ICI</button>
           <button class="jf-chat__btn" id="jfToggleBtn">▲</button>
@@ -63,7 +74,7 @@
         a.src = CFG.notificationSoundUrl;
         a.preload = 'auto';
         a.setAttribute('playsinline','');     // iOS
-        try { a.crossOrigin = 'anonymous'; } catch(e){} // si MP3 hébergé ailleurs avec CORS
+        try { a.crossOrigin = 'anonymous'; } catch(e){}
       }
       document.body.appendChild(a);
     }
@@ -141,7 +152,7 @@
       <div class="jf-msg__avatar" title="${escapeHTML(m.displayName||'')}">${escapeHTML(avatar)}</div>
       <div class="jf-msg__bubble">
         <div><strong>${escapeHTML(m.displayName||'')}</strong></div>
-        <div>${escapeHTML(m.text||'')}</div>
+        <div>${linkify(m.text||'')}</div>
         <div class="jf-msg__meta">${fmtTime(m.at)}</div>
       </div>
     `;
