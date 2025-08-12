@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <title>Générer Prompt — OUTILS JUSTIFIT</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{
+      --bg:#f3f5f7;
+      --nav:#001d50;
+      --accent:#66a2a0;
+      --accent-hover:#4c7b7b;
+      --ink:#333;
+      --card:#001d50;         /* carte sombre pour homogénéité avec tes pages */
+      --cardText:#ffffff;
+      --radius:12px;
+      --shadow:0 6px 18px rgba(0,0,0,.15);
+
+      --primary:#0066ff; --primary-600:#0055d4;
+      --soft:#f5f7fa; --line:#e5e7eb; --accentMono:#e8f0fe;
+
+      /* Mode SEO */
+      --seo-bg:#fff7ea;       /* fond page */
+      --seo-card:#fff7ea;     /* fond carte */
+      --seo-border:#facc15;
+      --seo-ink:#233044;
+    }
+
+    *{box-sizing:border-box}
+    body{ margin:0; font-family:Arial, Helvetica, sans-serif; background:var(--bg); color:var(--ink); }
+
+    /* NAVBAR (même style que tes autres pages) */
+    .navbar{
+      position:fixed; top:0; left:0; right:0; z-index:1000;
+      background:var(--nav); padding:10px 0; text-align:center;
+    }
+    .navbar a{
+      color:#fff; text-decoration:none; font-weight:bold;
+      padding:10px 20px; border-radius:5px; display:inline-block; transition:.25s;
+    }
+    .navbar a:hover{ background:var(--accent-hover) }
+    .navbar .ask-btn{
+      background:linear-gradient(135deg,#6a11cb,#2575fc); margin-left:10px;
+    }
+    .navbar .ask-btn:hover{
+      background:linear-gradient(135deg,#2575fc,#6a11cb);
+      transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,.25);
+    }
+
+    /* Layout */
+    main{ padding:100px 16px 40px; display:flex; justify-content:center; }
+    .card{
+      width:100%; max-width:980px; background:var(--card); color:var(--cardText);
+      border-radius:var(--radius); box-shadow:var(--shadow);
+      padding:24px; border:1px solid transparent;
+      transition: background .25s ease, color .25s ease, border-color .25s ease;
+    }
+    h1{ margin:0 0 6px; text-align:center; font-size:26px; color:#fff; }
+    .subtitle{ text-align:center; opacity:.9; font-size:14px; margin-bottom:12px; color:#dbe5ff; }
+    .hr{ height:3px; width:64px; background:var(--accent); border-radius:2px; margin:8px auto 16px;}
+
+    /* Mode selector */
+    .mode{
+      display:flex; gap:.5rem; background:#0f2a66; border:1px solid rgba(255,255,255,.14);
+      padding:.5rem; border-radius:12px; margin-bottom:1rem; flex-wrap:wrap; justify-content:center;
+    }
+    .mode input{display:none}
+    .seg{
+      padding:.55rem .9rem; border-radius:10px; cursor:pointer; user-select:none;
+      border:1px solid transparent; font-weight:700; color:#fff; background:transparent;
+    }
+    .seg.active{ background:#123b8a; border-color:#3b82f6; box-shadow:0 1px 0 rgba(2,6,23,.06); }
+    .badge{
+      display:inline-block; padding:.25rem .5rem; border-radius:999px; font-size:.75rem; font-weight:700;
+      border:1px solid rgba(255,255,255,.3); margin-left:.5rem; color:#fff; background:rgba(255,255,255,.06);
+    }
+
+    /* Form */
+    label{ display:block; font-weight:700; margin:.75rem 0 .4rem; color:#fff; }
+    input[type="text"], textarea{
+      width:100%; padding:10px 12px; border-radius:10px; border:1px solid #ced4da;
+      background:#f8fafc; color:#333; font-size:14px; transition:.2s border, .2s box-shadow;
+    }
+    input[type="text"]:focus, textarea:focus{
+      outline:none; border-color:#66a2a0; box-shadow:0 0 0 3px rgba(102,162,160,.28);
+    }
+    textarea{ min-height:140px; resize:vertical }
+    .counter{ font-size:.82rem; color:#c7d2fe; text-align:right; margin-top:.25rem; opacity:.9; }
+    .counter.bad{ color:#ffd2a6 } .counter.good{ color:#a7f3d0 }
+
+    .row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    @media (max-width:900px){ .row{ grid-template-columns:1fr; } }
+
+    .concurrent-block{
+      border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.06);
+      border-radius:10px; padding:14px; margin-top:12px;
+    }
+
+    /* Toolbars */
+    .toolbar{ display:flex; gap:.6rem; flex-wrap:wrap; align-items:center; margin:12px 0; }
+    .toolbar.bottom{ justify-content:flex-end; }
+    button{
+      background:linear-gradient(135deg, #66a2a0, #4c7b7b); color:#fff; border:none; padding:.75rem 1rem;
+      border-radius:10px; cursor:pointer; font-weight:800; font-size:.95rem;
+      transition:.18s transform, .18s box-shadow, .18s filter; box-shadow:0 8px 16px rgba(0,0,0,.18);
+    }
+    button:hover{ transform:translateY(-1px); box-shadow:0 12px 22px rgba(0,0,0,.22); }
+    .btn-ghost{ background:#fff; color:#0f172a; border:1px solid #d1d5db; box-shadow:none; }
+    .btn-ghost:hover{ border-color:#3b82f6; color:#3b82f6; }
+    .btn-danger{ background:#ef4444; box-shadow:0 8px 16px rgba(239,68,68,.35); }
+    .btn-danger:hover{ filter:saturate(1.05); }
+
+    /* Output */
+    #generatedPrompt{
+      white-space:pre-wrap; background:var(--accentMono); color:#0f172a;
+      padding:14px; border-radius:10px; border:1px solid #c7dafc; margin-top:12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    /* Toast */
+    .toast{
+      position:fixed; top:20px; left:50%; transform:translateX(-50%);
+      background:#4caf50; color:#fff; padding:10px 18px;
+      border-radius:6px; font-size:14px; opacity:0; visibility:hidden;
+      transition:opacity .3s, visibility .3s; z-index:2000;
+      box-shadow:0 6px 14px rgba(0,0,0,.2);
+    }
+    .toast.show{ opacity:1; visibility:visible; }
+
+    /* ======= Mode SEO : change le fond de la page ET celui de la carte outil ======= */
+    body.seo-mode{ background:var(--seo-bg); }
+    body.seo-mode .card{
+      background:var(--seo-card); color:var(--seo-ink); border-color:var(--seo-border);
+    }
+    body.seo-mode h1, body.seo-mode label{ color:var(--seo-ink); }
+    body.seo-mode .mode{ background:#fff3d4; border-color:var(--seo-border); }
+    body.seo-mode .seg{ color:#0f172a; }
+    body.seo-mode .seg.active{ background:#fff; border-color:var(--seo-border); }
+    body.seo-mode .badge{ background:#fff3d4; border-color:var(--seo-border); color:#0f172a; }
+    body.seo-mode .concurrent-block{ background:#fffdfa; border-color:#ffe7b3; }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <div class="navbar">
+    <a href="index.html">Call To Action</a>
+    <a href="ctabouton.html">CTA Bouton</a>
+    <a href="majusculeconvert.html">Convers MAJ</a>
+    <a href="nofollowcode.html">No Follow</a>
+    <a href="sourcearticle.html">Source</a>
+    <a href="promptjuridique.html">ANCIEN OUTIL</a>
+    <!-- Nouveau menu : cette page -->
+    <a href="generer-prompt.html">Générer Prompt</a>
+    <a href="poser-questions.html" class="ask-btn">Poser des questions</a>
+  </div>
+
+  <div id="toast" class="toast">Copié ✅</div>
+
+  <main>
+    <section class="card">
+      <h1>Générateur de Prompt — Analyse Juridique
+        <span id="modeBadge" class="badge">Mode : Réécriture</span>
+      </h1>
+      <div class="subtitle">Réécriture totale ou retouches SEO rapides. Un champ “Instructions supplémentaires” est disponible.</div>
+      <div class="hr"></div>
+
+      <!-- Mode selector -->
+      <div class="mode" id="modeBox">
+        <label class="seg active" id="seg-rewrite">
+          <input type="radio" name="mode" value="rewrite" checked>
+          Analyse & Réécriture Totale
+        </label>
+        <label class="seg" id="seg-seo">
+          <input type="radio" name="mode" value="seo">
+          Analyse Optimisation SEO (retouches)
+        </label>
+      </div>
+
+      <div>
+        <label for="articleTitle">Titre de l'article à analyser</label>
+        <input type="text" id="articleTitle" placeholder="Entrez le titre ici..."/>
+      </div>
+
+      <label for="articleContent">Contenu de l'article à analyser</label>
+      <textarea id="articleContent" rows="10" placeholder="Collez ici le contenu de votre article..."></textarea>
+      <div class="counter" id="articleCounter">0 caractères</div>
+
+      <div id="concurrentsContainer"></div>
+
+      <!-- Instructions supplémentaires -->
+      <div style="margin-top:14px;">
+        <label for="extraInstructions">Instructions supplémentaires (facultatif)</label>
+        <textarea id="extraInstructions" rows="6" placeholder="Ajoute ici des consignes spécifiques (style, ton, contraintes SEO, éléments juridiques à insister, etc.). Elles seront ajoutées en bas du prompt généré."></textarea>
+      </div>
+
+      <!-- Toolbar du milieu : Ajouter concurrent (au-dessus des actions finales) + Reset -->
+      <div class="toolbar">
+        <button class="btn-ghost" id="btnAddCompetitor">+ Ajouter un article concurrent</button>
+        <button class="btn-danger" id="btnReset">Réinitialiser</button>
+      </div>
+
+      <!-- Résultat -->
+      <div id="generatedPrompt" aria-live="polite"></div>
+
+      <!-- Toolbar tout en bas : Générer + Copier (derniers boutons) -->
+      <div class="toolbar bottom">
+        <button id="btnGenerate">Générer le Prompt</button>
+        <button class="btn-ghost" id="btnCopy">Copier le Prompt</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // ====== Éléments ======
+    let competitorCount = 0;
+    const els = {
+      body: document.body,
+      modeBox: document.getElementById('modeBox'),
+      segRewrite: document.getElementById('seg-rewrite'),
+      segSEO: document.getElementById('seg-seo'),
+      modeBadge: document.getElementById('modeBadge'),
+
+      articleTitle: document.getElementById('articleTitle'),
+      articleContent: document.getElementById('articleContent'),
+      articleCounter: document.getElementById('articleCounter'),
+      concurrentsContainer: document.getElementById('concurrentsContainer'),
+      btnAddCompetitor: document.getElementById('btnAddCompetitor'),
+      btnGenerate: document.getElementById('btnGenerate'),
+      btnCopy: document.getElementById('btnCopy'),
+      btnReset: document.getElementById('btnReset'),
+      output: document.getElementById('generatedPrompt'),
+      extra: document.getElementById('extraInstructions'),
+      toast: document.getElementById('toast')
+    };
+
+    // ====== Mode ======
+    function getMode(){
+      return document.querySelector('input[name="mode"]:checked')?.value || 'rewrite';
+    }
+    function setMode(mode){
+      const rewrite = mode === 'rewrite';
+      document.querySelector('input[name="mode"][value="rewrite"]').checked = rewrite;
+      document.querySelector('input[name="mode"][value="seo"]').checked = !rewrite;
+      els.segRewrite.classList.toggle('active', rewrite);
+      els.segSEO.classList.toggle('active', !rewrite);
+      els.modeBadge.textContent = 'Mode : ' + (rewrite ? 'Réécriture' : 'Optimisation SEO');
+      // Fond distinct SEO : page + carte outil
+      els.body.classList.toggle('seo-mode', !rewrite);
+    }
+
+    // ====== Compteurs / concurrents ======
+    function updateCounter(){
+      const n = els.articleContent.value.length;
+      els.articleCounter.textContent = n + ' caractères';
+      els.articleCounter.className = 'counter ' + (n < 400 ? 'bad' : 'good');
+    }
+    function escapeHtml(str=''){
+      return str.replace(/[&<>"']/g, (m)=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+    }
+    function addCompetitor(prefillTitle='', prefillContent=''){
+      competitorCount++;
+      const id = competitorCount;
+      const block = document.createElement('div');
+      block.className = 'concurrent-block';
+      block.dataset.cid = id;
+      block.innerHTML = `
+        <div class="row">
+          <div>
+            <label for="concurrentTitle${id}">Titre de l'article concurrent ${id}</label>
+            <input type="text" id="concurrentTitle${id}" placeholder="Titre de l'article concurrent..." value="${escapeHtml(prefillTitle)}"/>
+          </div>
+          <div>
+            <label>&nbsp;</label>
+            <button class="btn-ghost" type="button" data-remove="${id}">Supprimer ce concurrent</button>
+          </div>
+        </div>
+        <label for="concurrentContent${id}">Contenu de l'article concurrent ${id}</label>
+        <textarea id="concurrentContent${id}" rows="6" placeholder="Collez ici le contenu...">${escapeHtml(prefillContent)}</textarea>
+      `;
+      els.concurrentsContainer.appendChild(block);
+      block.querySelector(`[data-remove="${id}"]`).addEventListener('click', ()=> block.remove());
+    }
+    function collectCompetitors(){
+      const arr = [];
+      els.concurrentsContainer.querySelectorAll('.concurrent-block').forEach(block=>{
+        const id = block.dataset.cid;
+        const t = block.querySelector(`#concurrentTitle${id}`)?.value?.trim() || '';
+        const c = block.querySelector(`#concurrentContent${id}`)?.value?.trim() || '';
+        if(t || c){ arr.push({title:t, content:c}); }
+      });
+      return arr;
+    }
+    function buildCompetitorsText(){
+      const comps = collectCompetitors();
+      if(!comps.length) return '(Aucun concurrent fourni)';
+      return comps.map((c,i)=>`---\nArticle concurrent ${i+1}\nTitre : ${c.title || '(sans titre)'}\nContenu :\n${c.content || '(vide)'}`).join('\n\n');
+    }
+
+    // ====== Templates de prompt ======
+    function tmplRewrite({title, content, comps, extra}){
+      const extraBlock = (extra && extra.trim().length>0)
+        ? `\n________________________________________\n🧩 Instructions supplémentaires\n${extra.trim()}\n` : '';
+      return `✅ PROMPT — ANALYSE & RÉÉCRITURE TOTALE (ARTICLE JURIDIQUE POUR JUSTICIABLE)
+
+Tu agis comme un expert SEO + juriste. Objectifs :
+• Évaluer si le contenu est vraiment helpful pour un justiciable
+• Identifier toutes les lacunes juridiques et structurelles
+• Proposer un axe éditorial clair, une nouvelle structure Hn optimisée
+• Produire une base solide pour une RÉÉCRITURE TOTALE
+
+________________________________________
+🔍 Contenu à analyser
+Titre : ${title || '(sans titre)'}
+Contenu :
+${content || '(vide)'}
+
+________________________________________
+📎 Articles concurrents à dépasser
+${comps}
+→ Objectif : faire mieux en structure, clarté, richesse juridique et SEO.
+
+________________________________________
+⚖️ Analyse rapide (bullet points actionnables)
+• Intent actuel : Low / Medium / High
+• Public cible : identifié ? Oui / Non
+• Ton/registre : Trop vague / Trop technique / Équilibré
+• CTA vers un avocat : Faible / Moyen / Fort
+
+________________________________________
+🔎 Constat — Lacunes & points faibles
+• Notions juridiques manquantes ou survolées
+• Acteurs/juridictions absents (tribunal, juge, administration, avocat)
+• Procédures concrètes, recours, délais, risques (ce qui manque)
+• Vocabulaire juridique à vulgariser
+• Liens internes / ressources / CTA à prévoir
+
+________________________________________
+🎯 Axe éditorial recommandé
+• Angle central (orienté justiciable, incitatif, clair)
+• Proposition de titre H1 remanié (2 variantes)
+
+________________________________________
+📑 Nouvelle table des matières optimisée (H1/H2)
+• Définitions et bases juridiques
+• Situations & cas concrets
+• Démarches, procédures, délais
+• Recours & juridictions compétentes
+• Rôle de l’avocat (quand & pourquoi consulter)
+• Conseils pratiques + CTA internes
+
+________________________________________
+🔑 Mots-clés SEO (8–12)
+• Principaux + secondaires (alignés sur l’intention de recherche)
+
+________________________________________
+✅ Checklist “vraiment helpful”
+• Problèmes concrets des justiciables traités
+• Distinction cas simples vs conflictuels
+• Procédures + juridictions + délais mentionnés
+• Droits/obligations en langage clair
+• Exemples/cas pratiques
+• Rôle de l’avocat valorisé quand pertinent
+• Liens internes utiles (annuaire avocat + articles connexes)${extraBlock}`;
+    }
+
+    function tmplSEO({title, content, comps, extra}){
+      const extraBlock = (extra && extra.trim().length>0)
+        ? `\n________________________________________\n🧩 Instructions supplémentaires\n${extra.trim()}\n` : '';
+      return `✅ PROMPT — ANALYSE OPTIMISATION SEO (RETOUCHES RAPIDES, SANS RÉÉCRITURE TOTALE)
+
+Tu es expert SEO + juriste. Objectif : lister UNIQUEMENT les retouches essentielles et rapides
+pour que l’article surpasse les concurrents, sans tout réécrire.
+Si la réécriture totale est indispensable, commence par : "⚠️ À réécrire totalement" (avec 3 raisons).
+
+________________________________________
+🔍 Article à optimiser
+Titre : ${title || '(sans titre)'}
+Contenu :
+${content || '(vide)'}
+
+________________________________________
+📎 Concurrents à dépasser (référence)
+${comps}
+
+________________________________________
+🎯 Donne une liste courte (max 10 actions), ultra priorisée :
+• Titres Hn à ajuster / renommer (liste précise)
+• Paragraphes à ajouter/supprimer/resserrer (sections ciblées)
+• Notions juridiques à intégrer (mots-clés juridiques utiles)
+• Procédures/recours/délais manquants à insérer
+• CTA & liens internes indispensables (annuaire avocat + 1–2 articles)
+• Schéma d’ancre et mots-clés à placer (3–5 requêtes)
+• Exemples/cas concrets à ajouter (1–2)
+• Nettoyage style/ton : simplifier, vulgariser, raccourcir où nécessaire
+
+Concentre-toi UNIQUEMENT sur des retouches ciblées. Pas de table des matières.${extraBlock}`;
+    }
+
+    // ====== Génération ======
+    function generatePrompt(){
+      const mode = getMode();
+      const title = els.articleTitle.value.trim();
+      const content = els.articleContent.value.trim();
+      const extra = els.extra.value;
+
+      if(!title) showToast('Ajoute au moins un titre pour cadrer l’analyse.');
+      if(content.length < 200) showToast('Le contenu est très court : vise ≥ 400 caractères pour une analyse pertinente.');
+
+      const comps = buildCompetitorsText();
+      const payload = { title, content, comps, extra };
+      const out = (mode === 'seo') ? tmplSEO(payload) : tmplRewrite(payload);
+      els.output.textContent = out;
+      els.output.scrollIntoView({behavior:'smooth', block:'start'});
+    }
+
+    // ====== UI ======
+    function showToast(msg){
+      els.toast.textContent = msg || 'OK';
+      els.toast.classList.add('show');
+      setTimeout(()=> els.toast.classList.remove('show'), 1400);
+    }
+
+    // ====== Événements ======
+    els.btnAddCompetitor.addEventListener('click', ()=> addCompetitor());
+    els.btnGenerate.addEventListener('click', generatePrompt);
+    els.btnCopy.addEventListener('click', ()=>{
+      const txt = els.output.textContent.trim();
+      if(!txt) return;
+      navigator.clipboard.writeText(txt).then(()=> showToast('Copié dans le presse‑papiers ✅'))
+      .catch(()=>{
+        // fallback
+        const ta = document.createElement('textarea');
+        ta.value = txt; document.body.appendChild(ta); ta.select();
+        try{ document.execCommand('copy'); showToast('Copié dans le presse‑papiers ✅'); }catch(e){}
+        ta.remove();
+      });
+    });
+    els.btnReset.addEventListener('click', ()=>{
+      els.articleTitle.value = '';
+      els.articleContent.value = '';
+      els.extra.value = '';
+      els.output.textContent = '';
+      els.concurrentsContainer.innerHTML = '';
+      competitorCount = 0;
+      addCompetitor();
+      updateCounter();
+      setMode('rewrite');
+      showToast('Réinitialisé ✅');
+    });
+    els.articleContent.addEventListener('input', updateCounter);
+    els.modeBox.addEventListener('click', (e)=>{
+      const label = e.target.closest('.seg');
+      if(!label) return;
+      const mode = (label===els.segRewrite) ? 'rewrite' : 'seo';
+      setMode(mode);
+    });
+
+    // ====== Init ======
+    (function init(){
+      addCompetitor();
+      updateCounter();
+    })();
+  </script>
+</body>
+</html>
