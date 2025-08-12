@@ -1,0 +1,28 @@
+:root{
+  --jf-brand:#001d50;
+  --jf-ink:#0f172a;
+  --jf-bg:#ffffff;
+  --jf-gold:#ffd700;
+  --shadow:0 10px 30px rgba(0,0,0,.18);
+}
+
+.jf-chat{ position:fixed; right:18px; bottom:18px; width:340px; max-width:calc(100vw - 24px); z-index:2147483647; font-family:Arial,sans-serif; color:var(--jf-ink); }
+.jf-chat__head{
+  display:flex; align-items:center; justify-content:space-between; cursor:pointer;
+  background:linear-gradient(135deg,#3a3a3a,#222); color:var(--jf-gold);
+  padding:10px 12px; border-radius:14px 14px 0 0; border:1px solid rgba(255,215,0,.3); box-shadow:var(--shadow);
+}
+.jf-chat__title{ font-weight:800; font-size:14px; }
+.jf-chat__btn{ background:transparent; border:1px solid rgba(255,215,0,.3); color:var(--jf-gold); border-radius:8px; padding:4px 8px; font-weight:700; cursor:pointer; }
+.jf-chat__panel{ background:#fff; border:1px solid #e5e7eb; border-top:none; border-radius:0 0 14px 14px; overflow:hidden; box-shadow:var(--shadow); }
+.jf-chat__feed{ max-height:340px; overflow:auto; padding:10px; background:#f8fafc; }
+.jf-msg{ display:flex; gap:8px; margin:8px 0; }
+.jf-msg__avatar{ width:28px; height:28px; border-radius:50%; background:#dbeafe; display:grid; place-items:center; font-size:13px; color:#1e3a8a; font-weight:800; }
+.jf-msg__bubble{ background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:8px 10px; max-width:80%; }
+.jf-msg__meta{ font-size:11px; color:#64748b; margin-top:2px; }
+.jf-chat__composer{ border-top:1px solid #e5e7eb; background:#fff; padding:8px; display:grid; grid-template-columns:1fr auto; gap:8px; }
+.jf-chat__input{ border:1px solid #cbd5e1; border-radius:10px; padding:10px; font-size:14px; }
+.jf-chat__send{ background:linear-gradient(135deg,#66a2a0,#4c7b7b); color:#fff; border:none; border-radius:10px; padding:10px 14px; font-weight:800; cursor:pointer; }
+.jf-chat__meta{ display:flex; gap:6px; align-items:center; justify-content:space-between; padding:8px; background:#f1f5f9; border-top:1px solid #e5e7eb; font-size:12px; color:#334155; }
+.jf-chat__danger{ background:#ef4444; color:#fff; border:none; padding:6px 10px; border-radius:8px; cursor:pointer; }
+.jf-chat--min .jf-chat__panel{ display:none; }
