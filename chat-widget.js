@@ -48,7 +48,7 @@
           <span id="jfBadge" class="jf-badge hide" aria-label="Nouveau message"></span>
         </div>
         <div>
-          <button class="jf-chat__btn" id="jfSetNameBtn">PSEUDO ICI</button>
+          <button class="jf-chat__btn" id="jfSetNameBtn">Ajouter Pseudo ici</button>
           <button class="jf-chat__btn" id="jfToggleBtn">▲</button>
         </div>
       </div>
