@@ -1,300 +1,367 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-    <title>OUTILS JUSTIFIT</title>
-    <meta charset="utf-8">
-    <style>
-        body {
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-color: #f3f5f7;
-            font-family: Arial, sans-serif;
-            color: #333;
-            position: relative;
-        }
-        .navbar {
-            background-color: #001d50;
-            width: 100%;
-            padding: 10px 0;
-            text-align: center;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1000;
-        }
-        .navbar a {
-            color: #ffffff;
-            padding: 10px 20px;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .navbar a:hover {
-            background-color: #4c7b7b;
-            border-radius: 5px;
-        }
-        .container1 {
-            padding-top: 60px; /* Compense la barre de navigation */
-            background-color: #001d50;
-            padding: 30px;
-            border-radius: 10px;
-            width: 600px;
-            text-align: left;
-            color: #ffffff;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            color: #ffd700;
-            font-size: 26px;
-            text-align: center;
-            margin-bottom: 15px;
-        }
-        h2 {
-            color: #ffffff;
-            font-size: 20px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-weight: 600;
-        }
-        label {
-            font-weight: 600;
-            margin-top: 15px;
-            display: block;
-            color: #ffffff;
-        }
- textarea {
-    width: 100%;
-    height: 400px; /* Ajustez la hauteur ici selon vos besoins */
-    padding: 10px;
-    margin-top: 10px;
-    border-radius: 5px;
-    border: 1px solid #ced4da;
-    box-sizing: border-box;
-    font-size: 14px;
-}
+  <meta charset="utf-8" />
+  <title>OUTILS JUSTIFIT</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{
+      --brand:#001d50;
+      --brand-2:#4c7b7b;
+      --accent:#66a2a0;
+      --gold:#ffd700;
+      --bg:#f3f5f7;
+      --card:#001d50;
+      --codebg:#f0f4f8;
+      --text:#333;
+      --white:#fff;
+      --success:#4caf50;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
+      background:var(--bg); color:var(--text); font-family:Arial, sans-serif; position:relative;
+    }
+    .navbar{
+      position:fixed; top:0; left:0; width:100%; z-index:1000;
+      background:var(--brand); padding:10px 0; text-align:center;
+    }
+    .navbar a{
+      color:var(--white); text-decoration:none; font-weight:bold; padding:10px 20px; display:inline-block;
+    }
+    .navbar a:hover{ background:var(--brand-2); border-radius:5px; }
+    .container1{
+      width:min(900px, 92vw);
+      background:var(--card); color:var(--white);
+      margin-top:70px; padding:28px; border-radius:12px;
+      box-shadow:0 4px 12px rgba(0,0,0,.1);
+    }
+    h1{
+      color:var(--gold); text-align:center; font-size:26px; margin:0 0 14px;
+    }
+    h2{ color:var(--white); text-align:center; margin:0 0 18px; font-weight:600; font-size:20px; }
+    label{ display:block; font-weight:600; margin-top:14px; color:var(--white); }
+    textarea{
+      width:100%; height:420px; padding:12px; margin-top:10px; border-radius:6px; border:1px solid #ced4da;
+      font-size:14px; font-family: Consolas, "Courier New", monospace; background:#fff; color:#222;
+    }
+    .row{ display:grid; grid-template-columns: 1fr; gap:12px; margin-top:10px; }
+    input[type="button"], button{
+      width:100%; background:var(--accent); color:var(--white); border:none; border-radius:8px;
+      padding:12px 16px; cursor:pointer; font-weight:700; font-size:16px; transition:.25s ease background;
+    }
+    input[type="button"]:hover, button:hover{ background:var(--brand-2); }
+    .actions{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; }
+    .notification{
+      position:fixed; top:20px; left:50%; transform:translateX(-50%);
+      background:var(--success); color:var(--white); padding:10px 16px; border-radius:6px; font-size:14px;
+      opacity:0; visibility:hidden; transition:opacity .3s ease, visibility .3s ease; z-index:10;
+    }
+    .notification.show{ opacity:1; visibility:visible; }
+    #generatedCodeContainer{
+      margin-top:18px; padding:16px; background:var(--codebg); color:#333; border-radius:8px;
+      font-size:14px; font-family:'Courier New', Courier, monospace; display:none; white-space:pre-wrap; word-break:break-word;
+    }
+    #generatedCodeContainer::before{
+      content:"Votre code ici :"; font-weight:bold; display:block; margin-bottom:10px; color:var(--brand);
+    }
 
-select {
-    width: 100%;
-    padding: 10px;
-    margin-top: 10px;
-    border-radius: 5px;
-    border: 1px solid #ced4da;
-    font-size: 14px;
-    /* Vous pouvez garder cette partie inchangée ou ajuster si nécessaire */
-}
-        input[type="button"], button {
-            background-color: #66a2a0;
-            border: none;
-            color: #ffffff;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-            margin-top: 10px;
-            font-weight: 600;
-            width: 100%;
-        }
-        input[type="button"]:hover, button:hover {
-            background-color: #4c7b7b;
-        }
-        .notification {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #4caf50;
-            color: #ffffff;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 14px;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-            z-index: 10;
-        }
-        .notification.show {
-            opacity: 1;
-            visibility: visible;
-        }
-        #generatedCodeContainer {
-            margin-top: 20px;
-            padding: 20px;
-            background-color: #f0f4f8;
-            color: #333;
-            border-radius: 8px;
-            font-size: 14px;
-            font-family: 'Courier New', Courier, monospace;
-            display: none;
-        }
-        #generatedCodeContainer::before {
-            content: "Votre code ici :";
-            font-weight: bold;
-            display: block;
-            margin-bottom: 10px;
-            color: #001d50;
-        }
-       /* Bouton spécial Poser des questions */
-.navbar .ask-btn {
-  background: linear-gradient(135deg, #6a11cb, #2575fc); /* violet → bleu */
-  border-radius: 5px;
-  margin-left: 10px;
-  color: #fff !important;
-  font-weight: bold;
-  transition: all 0.3s ease;
-}
-
-/* Effet au survol */
-.navbar .ask-btn:hover {
-  background: linear-gradient(135deg, #2575fc, #6a11cb); /* inverse du dégradé */
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-}
- 
-    </style>
+    /* Styles de sortie ciblés (prévisualisation sémantique, pas obligatoire) */
+    .bloc-bonsavoir{ border:1px solid #e6e8ec; background:#fff; color:#222; border-radius:10px; padding:12px; margin:12px 0; }
+    .title-bonsavoir{ font-weight:700; margin-bottom:6px; color:#0b2a6f; }
+    .desc-bonsavoir{ line-height:1.5; }
+    blockquote{ border-left:4px solid #0b2a6f; margin:12px 0; padding:8px 12px; background:#f7f9ff; }
+    blockquote strong{ display:block; margin-bottom:6px; }
+    footer{ margin:16px 0; font-size:.85rem; color:#999; text-align:center; }
+    .muted{ opacity:.82; font-size:.92em; }
+  </style>
 </head>
 <body>
 
 <div class="notification" id="notification">Texte copié dans le presse-papiers !</div>
 
 <div class="container1">
-    <h1>OUTILS JUSTIFIT</h1>
-    <div class="navbar">
-        <a href="index.html">Call To Action</a>
-        <a href="ctabouton.html">CTA Bouton</a>
-        <a href="majusculeconvert.html">Convers MAJ</a>
-        <a href="nofollowcode.html">No Follow</a>
-        <a href="sourcearticle.html">Source</a>
-        <a href="promptjuridique.html">ANCIEN OUTIL</a>
-        <a href="poser-questions.html" class="ask-btn">Poser des questions</a>
+  <h1>OUTILS JUSTIFIT</h1>
+
+  <div class="navbar">
+    <a href="index.html">Call To Action</a>
+    <a href="ctabouton.html">CTA Bouton</a>
+    <a href="majusculeconvert.html">Convers MAJ</a>
+    <a href="nofollowcode.html">No Follow</a>
+    <a href="sourcearticle.html">Source</a>
+    <a href="promptjuridique.html">ANCIEN OUTIL</a>
+  </div>
+
+  <h2 class="muted">Encapsule automatiquement les blocs “CTA”, Key takeaways et Sources</h2>
+
+  <form onsubmit="return false;">
+    <label for="question">Collez votre texte [code source] ici :</label>
+    <textarea id="question" name="question" placeholder="Ex. : &lt;p&gt;&lt;strong&gt;Bon à savoir :&lt;/strong&gt; Le dépôt d’une main courante est gratuit...&lt;/p&gt;"></textarea>
+
+    <div class="actions">
+      <input type="button" value="Générer & Copier" onclick="runTool()">
+      <button type="button" onclick="downloadHtml()">Télécharger .html</button>
     </div>
-    <form>
-        <label for="language">Choisissez la langue :</label>
-        <select id="language" onchange="setLanguage()">
-            <option value="fr">Justifit FR</option>
-            <option value="uk">Justifit UK</option>
-        </select>
+  </form>
 
-        <label for="question">Collez votre texte [code source] ici : C'est pour encadrer le contenu d'un CTA</label>
-        <textarea id="question" name="question" placeholder="Exemple : <strong>Bon à savoir :</strong>Le dépôt d’une main courante est entièrement gratuit... "></textarea>
-        
-        <input type="button" value="Copier" onclick="calling()">
-    </form>
-    <div id="generatedCodeContainer"></div>
+  <div id="generatedCodeContainer"></div>
+</div>
 
-<!--Voici le code complet qui intègre tous les scripts fonctionnels, en ajoutant également la nouvelle fonctionnalité pour gérer le bouton CTA sans capturer le texte associé à l'URL.-->
+<footer>&copy; RoberiX 2025</footer>
 
-    <script>
-        function calling() {
-            var action1 = '<div class="bloc-bonsavoir">';
-            var action5 = '<div class="desc-bonsavoir">';
-            var action7 = '</div></div>';
-            var question = document.getElementById("question").value;
+<link rel="stylesheet" href="./assets/chat-widget/chat-widget.css">
+<script>window.JF_CHAT_ASSET_BASE="./assets/chat-widget/";</script>
+<script src="./assets/chat-widget/chat-widget.js"></script>
 
-            // Détection des URLs spécifiques pour le bouton CTA
-            var ctabtnRegexA = /<a href="(https:\/\/www\.justifit\.fr\/avocats\/q\/[^\s]+)">[^<]*<\/a>/g;
-            var ctabtnRegexB = /<a href="(https:\/\/www\.justifit\.fr\/trouver\/avocats\/france\/[^\s]+)">[^<]*<\/a>/g;
+<script>
+/* ============================
+   OUTILS JUSTIFIT (robuste)
+   - Vanilla JS, 100% client
+   - Parsing DOM + regex tolérantes
+   - Table de mapping pour normaliser les titres
+   ============================ */
 
-            var ctabtnMatchA = question.match(ctabtnRegexA);
-            var ctabtnMatchB = question.match(ctabtnRegexB);
-            var ctabtnUrl = ctabtnMatchA ? ctabtnMatchA[0].match(/href="([^"]+)"/)[1] : (ctabtnMatchB ? ctabtnMatchB[0].match(/href="([^"]+)"/)[1] : null);
-
-            // Gérer la section "Points clés à retenir"
-            var pointsRegex = /<strong>Points clés à retenir\s*:\s*<\/strong>\s*<ul>([\s\S]*?)<\/ul>/g;
-            var result = question.replace(pointsRegex, function(match, content) {
-                // Créer le code ctabtn si une URL est trouvée
-                var ctabtnCode = ctabtnUrl ? `[ctabtn url="${ctabtnUrl}" text="Trouvez mon avocat" target="_blank" follow="follow" color="blue"]` : '';
-                return ctabtnCode + '<blockquote><strong>POINTS CLÉS À RETENIR :</strong>' + '<ul>' + content + '</ul></blockquote>';
-            });
-
-            // Gérer la section "À retenir :"
-            var retenirRegex = /<strong>À retenir\s*:\s*([^<]+)<\/strong>\s*(<ul>([\s\S]*?)<\/ul>|([^<]+))/g;
-            result = result.replace(retenirRegex, function(match, question, listContent, _, paragraphContent) {
-                var formattedQuestion = '<h2><strong>À RETENIR : ' + question.trim() + '</strong></h2>';
-                var contentBlock;
-
-                // Vérifier si c'est suivi d'une liste à puce ou d'un paragraphe
-                if (listContent) {
-                    contentBlock = '<blockquote>' + formattedQuestion + listContent + '</blockquote>';
-                } else {
-                    contentBlock = '<blockquote>' + formattedQuestion + paragraphContent.trim() + '</blockquote>';
-                }
-
-                return contentBlock;
-            });
-
-// Améliorer la détection des titleslist
-var titlesList = [
-    "Key Takeaway:", "Bon à savoir :", "À noter :", "À savoir :", "Important :", "Nos conseils :", "a noter :", "Conseils :", "Strategic insight:", "Strategic tip:", "a savoir :", 
-    "Attention :", "Remarque :", "Remember:", "Beware:", "Advice:", "Caution:", "Did you know?", "Enforcement insight:", "Cost insight:", "Evidence protection tip:",
-    "Exception:", "Insight:", "Tip:", "Good to know:", "Word to the wise:", "Expert insight:", "Evidence tip:", "Compensation insight:", "Defence strategy tip:", "Access to justice tip:",
-    "Pro tip:", "Noteworthy:", "Key consideration:", "Prudent approach:", "Practical consideration:", "Important:", "Consideration:", "Crucial:", "Power tip:", "Negotiation tip:",
+/** 1) Libellés CTA que l’on détecte (FR & UK)
+ *  On reste proche de ta liste existante, mais la détection est plus souple.
+ */
+const CALLOUT_LABELS = [
+  // FR
+  "Bon à savoir","À noter","A noter","À savoir","A savoir","Important","Nos conseils","Conseils","Attention","Remarque","À retenir","A retenir",
+  // EN / UK
+  "Key takeaways","Key takeaway","Advice","Tip","Pro tip","Good to know","Strategic insight","Strategic tip","Remember","Beware","Caution","Did you know",
+  "Exception","Insight","Noteworthy","Key consideration","Prudent approach","Practical consideration","Consideration","Power tip","Negotiation tip","Word to the wise",
+  "Enforcement insight","Cost insight","Evidence protection tip","Evidence tip","Compensation insight","Defence strategy tip","Access to justice tip","Expert insight"
 ];
 
-titlesList.forEach(function(title) {
-    var regex = new RegExp(`(<strong>${title}\\s*:?\\s*</strong>)([^<\\n]*)`, 'g');
-    result = result.replace(regex, function(match, fullMatch, content) {
-        return action1 + '<div class="title-bonsavoir"><strong>' + title + '</strong></div>' +
-               action5 + content.trim() + action7;
-    });
-});
+/** 2) Libellés fin d’article → blockquote */
+const TAKEAWAYS_LABELS = [
+  "Points clés à retenir","À retenir","A retenir","Key takeaways","Key takeaway","Key Takeaways","Key Takeaway"
+];
 
-            // Gérer la section "Sources"
-            var sourcesRegex = /<strong>Sources\s*:\s*<\/strong>([\s\S]*?)(?=<strong>|$)/g;
-            result = result.replace(sourcesRegex, function(match, sourceContent) {
-                const urls = sourceContent.match(/<a href="(.*?)">(.*?)<\/a>/g);
-                if (urls) {
-                    const formattedSources = urls.map(url => {
-                        const linkMatch = url.match(/<a href="(.*?)">(.*?)<\/a>/);
-                        const domain = new URL(linkMatch[1]).hostname.replace('www.', '');
-                        return `${domain} -- ${linkMatch[1]}`;
-                    }).join(' | ');
-                    return `[article_sources list="${formattedSources}"]`;
-                }
-                return '';
-            });
+/** 3) Mapping d’affichage (normalisation visuelle)
+ *  Si un libellé est détecté, on applique ce mapping pour le Titre (ex. Tip → TIP).
+ *  Ajoute / ajuste ce que tu veux.
+ */
+const LABEL_DISPLAY_MAP = new Map([
+  // FR
+  ["Bon à savoir","BON À SAVOIR"],
+  ["À noter","À NOTER"], ["A noter","À NOTER"],
+  ["À savoir","À SAVOIR"], ["A savoir","À SAVOIR"],
+  ["Important","IMPORTANT"],
+  ["Nos conseils","NOS CONSEILS"], ["Conseils","CONSEILS"],
+  ["Attention","ATTENTION"],
+  ["Remarque","REMARQUE"],
+  ["À retenir","À RETENIR"], ["A retenir","À RETENIR"],
+  ["Points clés à retenir","POINTS CLÉS À RETENIR"],
 
-            // Affichage du résultat
-            document.getElementById('generatedCodeContainer').textContent = result;
-            document.getElementById('generatedCodeContainer').style.display = 'block';
+  // EN / UK
+  ["Key takeaways","KEY TAKEAWAYS"], ["Key takeaway","KEY TAKEAWAY"],
+  ["Advice","ADVICE"],
+  ["Tip","TIP"], ["Pro tip","PRO TIP"],
+  ["Good to know","GOOD TO KNOW"],
+  ["Strategic insight","STRATEGIC INSIGHT"], ["Strategic tip","STRATEGIC TIP"],
+  ["Remember","REMEMBER"], ["Beware","BEWARE"], ["Caution","CAUTION"],
+  ["Did you know","DID YOU KNOW"],
+  ["Exception","EXCEPTION"], ["Insight","INSIGHT"], ["Noteworthy","NOTEWORTHY"],
+  ["Key consideration","KEY CONSIDERATION"],
+  ["Prudent approach","PRUDENT APPROACH"],
+  ["Practical consideration","PRACTICAL CONSIDERATION"],
+  ["Consideration","CONSIDERATION"],
+  ["Power tip","POWER TIP"], ["Negotiation tip","NEGOTIATION TIP"],
+  ["Word to the wise","WORD TO THE WISE"],
+  ["Enforcement insight","ENFORCEMENT INSIGHT"],
+  ["Cost insight","COST INSIGHT"],
+  ["Evidence protection tip","EVIDENCE PROTECTION TIP"], ["Evidence tip","EVIDENCE TIP"],
+  ["Compensation insight","COMPENSATION INSIGHT"],
+  ["Defence strategy tip","DEFENCE STRATEGY TIP"],
+  ["Access to justice tip","ACCESS TO JUSTICE TIP"],
+  ["Expert insight","EXPERT INSIGHT"]
+]);
 
-            // Copier le résultat dans le presse-papiers
-            var textarea = document.createElement("textarea");
-            textarea.value = result;
-            document.body.appendChild(textarea);
-            textarea.select();
-            document.execCommand("copy");
-            textarea.remove();
+/** 4) Motifs d’URL pour le shortcode [ctabtn] (reprend ta logique) */
+const CTA_URL_PATTERNS = [
+  /https:\/\/www\.justifit\.fr\/avocats\/q\/[^\s"']+/gi,
+  /https:\/\/www\.justifit\.fr\/trouver\/avocats\/france\/[^\s"']+/gi,
+];
 
-            showNotification();
-        }
+function normalizeText(text){
+  return (text||"").replace(/\u00A0/g," ").replace(/\s+/g," ").trim();
+}
+function escapeRe(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"); }
 
-        function showNotification() {
-            const notification = document.getElementById('notification');
-            notification.classList.add('show');
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 2000);
-        }
+/** Détermine si un bloc commence par un “label” (avec ou sans “:”, avec/ sans <strong>, casse indifférente) */
+function startsWithLabelHTML(html, label){
+  const L = escapeRe(label);
+  const pattern = `^(?:<strong>\\s*)?${L}\\s*:?(?:\\s*<\\/strong>)?\\s*`;
+  return new RegExp(pattern,"i").test((html||"").trim());
+}
+/** Retire le libellé détecté du début du HTML d’un paragraphe */
+function stripLeadingLabelHTML(html, label){
+  const L = escapeRe(label);
+  const re = new RegExp(`^(?:<strong>\\s*)?${L}\\s*:?(?:\\s*<\\/strong>)?\\s*`,"i");
+  return (html||"").trim().replace(re,"");
+}
+/** Met en forme le libellé selon le mapping ; sinon uppercasing simple + “ : ” */
+function formatDisplayLabel(label){
+  if (LABEL_DISPLAY_MAP.has(label)) return LABEL_DISPLAY_MAP.get(label);
+  return label.toUpperCase();
+}
+function findAllCtaUrls(html){
+  const urls = new Set();
+  CTA_URL_PATTERNS.forEach(re => (html.match(re)||[]).forEach(u => urls.add(u)));
+  return Array.from(urls);
+}
 
-        function setLanguage() {
-            const language = document.getElementById("language").value;
-            if (language === "fr") {
-                document.getElementById("question").value = ''; // Reset textarea
-                calling = calling; // Appel de la fonction pour FR
-            } else {
-                document.getElementById("question").value = ''; // Reset textarea
-                calling = callingUK; // Appel de la fonction pour UK
-            }
-        }
-    </script>
-</div>
-<footer style="margin-top: 20px; font-size: 0.8rem; color: #999; text-align: center;">
-    &copy; RoberiX 2025
-</footer>
+/** Wrap générique pour CTA block */
+function wrapCalloutBlock(doc, node, usedLabel, contentHTML){
+  const wrapper = doc.createElement("div");
+  wrapper.className = "bloc-bonsavoir";
+  const title = doc.createElement("div");
+  title.className = "title-bonsavoir";
+  title.innerHTML = `<strong>${formatDisplayLabel(usedLabel)} :</strong>`;
+  const body = doc.createElement("div");
+  body.className = "desc-bonsavoir";
+  body.innerHTML = contentHTML;
+  wrapper.appendChild(title); wrapper.appendChild(body);
+  node.replaceWith(wrapper);
+}
 
+/** Blockquote “takeaways” (fin d’article) + CTA optionnel */
+function wrapTakeaways(doc, startNode, label, ctaUrl){
+  const block = doc.createElement("blockquote");
+  const title = doc.createElement("strong");
+  title.textContent = `${formatDisplayLabel(label)} :`;
+  block.appendChild(title);
+
+  // Cherche UL qui suit, sinon 1 paragraphe voisin
+  let cursor = startNode.nextSibling, collected=false;
+  while(cursor){
+    if (cursor.nodeType === 1){
+      const tag = cursor.tagName.toLowerCase();
+      if (tag === "ul"){
+        block.appendChild(cursor.cloneNode(true));
+        collected=true; break;
+      } else if (["p","div","br"].includes(tag)){
+        block.appendChild(cursor.cloneNode(true));
+        collected=true; break;
+      } else { break; }
+    } else if (cursor.nodeType === 3){
+      const txt = normalizeText(cursor.textContent);
+      if (txt){
+        const p = doc.createElement("p"); p.textContent = txt;
+        block.appendChild(p); collected=true;
+      }
+      break;
+    } else break;
+  }
+
+  const frag = doc.createDocumentFragment();
+  if (ctaUrl){
+    frag.appendChild(doc.createTextNode(
+      `[ctabtn url="${ctaUrl}" text="Trouvez mon avocat" target="_blank" follow="follow" color="blue"]`
+    ));
+  }
+  frag.appendChild(block);
+  startNode.replaceWith(frag);
+
+  if (!collected){
+    const p = doc.createElement("p"); p.textContent = "";
+    block.appendChild(p);
+  }
+}
+
+/** Transforme le HTML d’entrée en HTML formaté */
+function transformHTML(inputHTML){
+  const src = normalizeText(inputHTML);
+  const container = document.createElement("div");
+  container.innerHTML = src;
+
+  // CTA URLs (toutes) ; on utilisera la 1ère pour le shortcode (comme avant)
+  const allHtml = container.innerHTML;
+  const ctaUrls = findAllCtaUrls(allHtml);
+  const firstCta = ctaUrls[0] || null;
+
+  // 1) Parcours des nœuds paragraphe-like
+  const nodes = Array.from(container.querySelectorAll("p, div"));
+  nodes.forEach(node => {
+    const raw = node.innerHTML;
+    const textNorm = normalizeText(raw);
+
+    // détection labels
+    for (const label of CALLOUT_LABELS){
+      if (startsWithLabelHTML(raw, label) || new RegExp(`^${escapeRe(label)}$`,"i").test(textNorm)){
+        // Si c’est un “takeaways”, on laisse à l’étape 2
+        if (TAKEAWAYS_LABELS.some(t => new RegExp(`^${escapeRe(t)}$`,"i").test(label))) break;
+
+        const contentHTML = stripLeadingLabelHTML(raw, label);
+        wrapCalloutBlock(container.ownerDocument, node, label, contentHTML);
+        return; // nœud remplacé, on arrête ici
+      }
+    }
+  });
+
+  // 2) Takeaways (fin d’article)
+  const nodes2 = Array.from(container.querySelectorAll("p, div, h2, h3, h4, strong"));
+  nodes2.forEach(node => {
+    const raw = node.innerHTML || node.textContent || "";
+    const textNorm = normalizeText(raw);
+    for (const label of TAKEAWAYS_LABELS){
+      if (startsWithLabelHTML(raw, label) || new RegExp(`^${escapeRe(label)}$`,"i").test(textNorm)){
+        wrapTakeaways(container.ownerDocument, node, label, firstCta);
+        return;
+      }
+    }
+  });
+
+  // 3) “Sources” → shortcode [article_sources list="…"] (reprend ta mécanique)
+  container.innerHTML = container.innerHTML.replace(
+    /<strong>\s*Sources\s*:?\s*<\/strong>([\s\S]*?)(?=<strong>|$)/gi,
+    (m, content) => {
+      const links = Array.from(content.matchAll(/<a\s+href="([^"]+)".*?>(.*?)<\/a>/gi));
+      if (!links.length) return "";
+      const formatted = links.map(([,href])=>{
+        try{ return `${new URL(href).hostname.replace(/^www\./,"")} -- ${href}`; }
+        catch{ return href; }
+      }).join(" | ");
+      return `[article_sources list="${formatted}"]`;
+    }
+  );
+
+  return container.innerHTML;
+}
+
+/** UI */
+function runTool(){
+  const src = document.getElementById("question").value || "";
+  const result = transformHTML(src);
+
+  const out = document.getElementById("generatedCodeContainer");
+  out.textContent = result;
+  out.style.display = "block";
+
+  if (navigator.clipboard?.writeText){
+    navigator.clipboard.writeText(result).then(showNotification).catch(()=>legacyCopy(result));
+  }else{
+    legacyCopy(result);
+  }
+}
+function legacyCopy(text){
+  const ta = document.createElement("textarea");
+  ta.value = text; document.body.appendChild(ta); ta.select();
+  document.execCommand("copy"); ta.remove(); showNotification();
+}
+function showNotification(){
+  const n = document.getElementById("notification");
+  n.classList.add("show"); setTimeout(()=>n.classList.remove("show"), 2000);
+}
+function downloadHtml(){
+  const code = document.getElementById("generatedCodeContainer").textContent || "";
+  const blob = new Blob([code], {type:"text/html;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "sortie-justifit.html"; a.click();
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+}
+</script>
 </body>
 </html>
