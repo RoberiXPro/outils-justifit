@@ -44,7 +44,7 @@
     root.innerHTML = `
       <div class="jf-chat__head" id="jfHead">
         <div class="jf-chat__title">
-          💬 POSER DES QUESTION ICI
+          💬 POSER DES QUESTIONS ICI
           <span id="jfBadge" class="jf-badge hide" aria-label="Nouveau message"></span>
         </div>
         <div>
