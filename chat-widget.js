@@ -23,9 +23,9 @@
     root.className = 'jf-chat jf-chat--min';
     root.innerHTML = `
       <div class="jf-chat__head" id="jfHead">
-        <div class="jf-chat__title">💬 Aide entre agents — Justifit</div>
+        <div class="jf-chat__title">💬 POSER DES QUESTION ICI</div>
         <div>
-          <button class="jf-chat__btn" id="jfSetNameBtn">Nom</button>
+          <button class="jf-chat__btn" id="jfSetNameBtn">PSEUDO ICI</button>
           <button class="jf-chat__btn" id="jfToggleBtn">▲</button>
         </div>
       </div>
