@@ -165,10 +165,10 @@
 
   <main>
     <section class="card">
-      <h1>Prompt — Réécriture et Optimisation
+      <h1>Générateur de Prompt — SEO / GEO Juridique
         <span id="modeBadge" class="badge">Mode : Réécriture</span>
       </h1>
-      <div class="subtitle">Réécriture totale ou optimisation SEO/GEO. Format direct, juridique, helpful et orienté mise en relation avocat.</div>
+      <div class="subtitle">Réécriture ou optimisation SEO/GEO. Ajoute aussi forums, Reddit, PAA et mots-clés pour capter les vraies intentions utilisateur.</div>
       <div class="hr"></div>
 
       <!-- Mode selector -->
@@ -205,10 +205,16 @@
 
       <div id="concurrentsContainer"></div>
 
-      <!-- Instructions supplémentaires -->
+      <!-- Données supplémentaires -->
       <div style="margin-top:14px;">
-        <label for="extraInstructions">Instructions supplémentaires (facultatif)</label>
-        <textarea id="extraInstructions" rows="6" placeholder="Ajoute ici des consignes spécifiques (style, ton, contraintes SEO, éléments juridiques à insister, etc.). Elles seront ajoutées en bas du prompt généré."></textarea>
+        <label for="extraInstructions">Données SEO / Ahrefs / Google (facultatif)</label>
+        <textarea id="extraInstructions" rows="6" placeholder="Colle ici les questions associées Google/PAA, mots-clés Ahrefs, recherches associées, contraintes client, liens internes à pousser, ou points juridiques à vérifier. Le format final est déjà intégré au prompt."></textarea>
+      </div>
+
+      <!-- Signaux utilisateurs -->
+      <div style="margin-top:14px;">
+        <label for="userSignals">Forums / Reddit / questions utilisateurs (facultatif)</label>
+        <textarea id="userSignals" rows="7" placeholder="Colle ici des discussions Reddit, forums, commentaires, questions d'internautes, cas concrets ou formulations naturelles. L'outil demandera d'en extraire les douleurs, intentions, angles high intent et FAQ utiles sans gonfler l'article."></textarea>
       </div>
 
       <!-- Toolbar du milieu : Ajouter concurrent (au-dessus des actions finales) + Reset -->
@@ -254,6 +260,7 @@
       btnReset: document.getElementById('btnReset'),
       output: document.getElementById('generatedPrompt'),
       extra: document.getElementById('extraInstructions'),
+      userSignals: document.getElementById('userSignals'),
       toast: document.getElementById('toast')
     };
 
@@ -325,39 +332,144 @@
       return (extra && extra.trim().length>0)
         ? `
 ________________________________________
-🧩 Instructions supplémentaires de l'utilisateur
+🧩 Données SEO / Ahrefs / Google fournies par l'utilisateur
 ${extra.trim()}
 ` : '';
+    }
+
+    function formatUserSignals(userSignals){
+      return (userSignals && userSignals.trim().length>0)
+        ? `
+________________________________________
+🗣️ Signaux utilisateurs / forums / Reddit / commentaires
+${userSignals.trim()}
+
+Consigne : exploiter ces signaux pour repérer les douleurs réelles, questions fréquentes, formulations naturelles, objections, cas pratiques et angles high intent. Ne pas recopier les témoignages. Les transformer en recommandations SEO/GEO utiles, FAQ pertinentes et formulations plus humaines.
+` : '';
+    }
+
+    function humanWritingRules(){
+      return `________________________________________
+✍️ Style d'écriture humain obligatoire
+Quand tu proposes une reformulation, un paragraphe, une introduction, une FAQ ou une section complète, l'écriture doit rester naturelle, professionnelle et juridique.
+• Varier la longueur des phrases : certaines courtes, certaines plus développées.
+• Éviter les phrases trop uniformes, mécaniques ou génériques.
+• Garder une bonne richesse de vocabulaire sans devenir trop technique.
+• Répondre clairement, mais avec un ton humain, fluide et crédible.
+• Éviter les formulations artificielles du type “il est important de noter que” répétées partout.
+• Ne pas sur-optimiser les mots-clés. Les intégrer naturellement.
+• Ne pas produire un style robotique, publicitaire ou froid. Le contenu doit ressembler à un vrai rédacteur juridique expérimenté.`;
     }
 
     function commonRules(){
       return `________________________________________
 📌 Règles obligatoires SEO/GEO/Juridique
-• Répondre directement dès le début des H2 formulés en question, puis développer.
+• Répondre directement aux intentions de recherche, sans blabla ni introduction longue.
+• Quand un H2 est une question, proposer une réponse directe dès la première phrase, puis détailler.
+• Vérifier si une réponse existe déjà dans l'introduction ou une autre section avant de proposer un ajout.
 • Éviter toute répétition entre introduction, H2, FAQ, conclusion et blocs récapitulatifs.
-• Prioriser les listes à puces pour les conditions, étapes, risques, exceptions, documents, délais et mentions obligatoires.
+• Prioriser les listes à puces pour les conditions, étapes, risques, exceptions, documents, délais, mentions obligatoires et recommandations.
 • Garder des paragraphes courts, humains et lisibles. Éviter les gros blocs.
+• Scruter les sections qui tournent en rond, ne répondent pas vraiment au H2 ou retardent la réponse utile.
 • Distinguer clairement : définition, conditions d'accès, procédure, exceptions, délais, coût, risques, rôle de l'avocat, action à faire.
 • Rendre le contenu utile à un justiciable : concret, clair, actionnable, pas seulement théorique.
 • Renforcer l'intention avocat quand c'est pertinent : expliquer quand et pourquoi consulter, sans ton publicitaire forcé.
+• Le dernier H2 recommandé doit toujours traiter le rôle de l'avocat ou le moment où consulter un avocat.
 • Pour la France : éviter “avocat spécialisé” sauf spécialisation officiellement certifiée. Préférer “avocat en…”, “avocat intervenant en…”, “avocat compétent en…”.
 • Pour FR / BE / UK : respecter le vocabulaire, les procédures et les institutions du pays concerné. Ne pas mélanger les droits.
 • Références juridiques : citer dans le corps seulement quand cela aide vraiment, puis proposer une section courte en bas de type “Les règles juridiques à vérifier” / “Le cadre légal à connaître”.
-• FAQ : réponses courtes et directes. Si un lien interne est utile, répondre d'abord puis proposer le lien. Ne jamais mettre uniquement un lien.
+• FAQ : maximum 5 questions. Réponses très directes, 1 à 2 phrases maximum. Si un lien interne est utile, répondre d'abord puis proposer le lien. Ne jamais mettre uniquement un lien.
 • GEO : phrases claires, extractibles, sans blabla. Les réponses doivent pouvoir être reprises par Google AI Overview, ChatGPT, Gemini ou Perplexity.
 • Ne pas copier les concurrents : identifier ce qu'ils font mieux, puis proposer une version plus utile, plus juridique et plus high intent.`;
     }
 
-    function tmplRewrite({title, market, content, comps, extra}){
+    function rewriteOutputFormat(){
+      return `________________________________________
+📌 FORMAT DE RÉPONSE OBLIGATOIRE — RÉÉCRITURE
+Réponds uniquement avec ce format simple, prêt à transférer aux rédacteurs. Pas de longues analyses avant/après. Pas de pavé.
+
+1- Axe éditorial
+Mettre en avant : …
+Objectif : High intent → inciter à consulter un avocat.
+
+2- Table des matières optimisée (6 à 8 H2 maximum)
+Contraintes obligatoires :
+• Chaque H2 doit être formulé sous forme de question.
+• Chaque H2 doit traiter une seule question. Ne jamais mettre deux intentions dans un même H2.
+• Éviter les titres trop longs, les parenthèses inutiles et les détails lourds dans les H2.
+• Ne pas créer de H2 redondant avec l'introduction ou avec une FAQ.
+• Le dernier H2 doit toujours porter sur le rôle de l'avocat / quand consulter un avocat.
+
+Format attendu :
+H2-[titre 1 sous forme de question]
+H2-[titre 2 sous forme de question]
+H2-[titre 3 sous forme de question]
+H2-[titre 4 sous forme de question]
+H2-[titre 5 sous forme de question]
+H2-[titre 6 sous forme de question]
+
+FAQ : 3 à 5 questions maximum
+• Proposer uniquement des FAQ utiles qui ne répètent pas les H2.
+• Si une question est déjà traitée par un H2, ne pas la remettre en FAQ.
+• Chaque FAQ doit avoir une réponse directe de 1 à 2 phrases maximum.
+• Utiliser les recherches associées, PAA, forums ou questions longue traîne si elles sont fournies.
+
+3- Mots-clés SEO prioritaires
+[mots-clés séparés par des virgules]
+
+Important : si une information mérite une correction critique (juridique, répétition, section à supprimer), l'intégrer dans “Mettre en avant” ou dans les H2 proposés. Ne pas ajouter de section supplémentaire sauf demande explicite.`;
+    }
+
+    function seoOutputFormat(){
+      return `________________________________________
+📌 FORMAT DE RÉPONSE OBLIGATOIRE — OPTIMISATION
+Réponds avec une structure de retouches concrètes, pas avec le format de réécriture totale. Le résultat doit être clair, actionnable et facile à donner aux rédacteurs.
+
+1- Diagnostic rapide
+• Intent actuel : Low / Medium / High
+• Problème principal : …
+• Objectif : High intent → inciter à consulter un avocat.
+
+2- Optimisations prioritaires à faire
+Donner 5 à 10 actions maximum. Pour chaque action, utiliser ce format :
+• Section concernée : [Intro / H2 / H3 / FAQ / conclusion / autre]
+• Problème : [répétition, blabla, réponse trop lente, manque juridique, phrase risquée, données datées, mauvais CTA, etc.]
+• Action recommandée : [supprimer / raccourcir / fusionner / reformuler / déplacer / ajouter]
+• Proposition de correction : [phrase, paragraphe ou liste prête à utiliser si nécessaire]
+
+3- Structure Hn à ajuster si nécessaire
+• Lister uniquement les H2/H3 à renommer, supprimer, fusionner ou déplacer.
+• Ne jamais proposer deux questions dans un seul H2.
+• Si la structure actuelle est bonne, écrire : “Structure globale à conserver”.
+• Le dernier H2 doit traiter le rôle de l'avocat / quand consulter un avocat.
+
+4- FAQ recommandée
+• 3 à 5 questions maximum.
+• Réponses directes, 1 à 2 phrases maximum.
+• Ne pas reprendre une question déjà traitée par un H2.
+• Utiliser les forums, Reddit, PAA ou recherches associées si fournis.
+
+5- Mots-clés SEO prioritaires
+[mots-clés séparés par des virgules]
+
+Important : l'objectif n'est pas de refaire tout l'article. Il faut identifier ce qui doit vraiment être modifié, comme dans un audit éditorial SEO/GEO précis.`;
+    }
+
+    function tmplRewrite({title, market, content, comps, extra, userSignals}){
       const extraBlock = formatExtra(extra);
-      return `✅ PROMPT — ANALYSE & RÉÉCRITURE TOTALE SEO/GEO (ARTICLE JURIDIQUE JUSTIFIT)
+      const userSignalsBlock = formatUserSignals(userSignals);
+      return `✅ PROMPT — BRIEF RÉÉCRITURE SEO/GEO (ARTICLE JURIDIQUE JUSTIFIT)
 
 Tu agis comme un expert senior en SEO, GEO, rédaction juridique et stratégie de conversion avocat.
-Ta mission : analyser l'article fourni, le comparer aux concurrents, puis produire des recommandations précises pour une réécriture totale plus utile, plus juridique, plus claire et plus high intent.
+Ta mission : analyser l'article Justifit, le comparer aux concurrents, exploiter les signaux utilisateurs fournis, puis produire un brief court et directement exploitable par les rédacteurs pour une réécriture totale.
 
 Marché juridique : ${market || 'Non précisé'}
 
 ${commonRules()}
+
+${humanWritingRules()}
+
+${rewriteOutputFormat()}
 
 ________________________________________
 🔍 Article Justifit à analyser
@@ -369,107 +481,41 @@ ________________________________________
 📎 Articles concurrents à dépasser
 ${comps}
 
+${extraBlock}${userSignalsBlock}
 ________________________________________
-1) Diagnostic rapide
-Donne une analyse courte et franche :
-• Intent actuel : Low / Medium / High
-• Intent cible recommandé : Low / Medium / High
-• Public cible réel : justiciable informé / justiciable en urgence / personne prête à contacter un avocat
-• Niveau juridique : insuffisant / correct / solide / à sécuriser
-• Niveau GEO : faible / moyen / bon / excellent
-• Niveau conversion avocat : faible / moyen / fort
+🎯 Consignes d'analyse avant de produire le format final
+Analyse discrètement :
+• l'intention actuelle et l'intention cible : Low / Medium / High ;
+• ce que les concurrents abordent de plus utile juridiquement ;
+• ce que les forums/Reddit/questions utilisateurs révèlent sur les douleurs réelles ;
+• les manques : conditions, exceptions, délais, risques, démarches, rôle de l'avocat ;
+• les répétitions à éviter dans la future structure ;
+• les H2 qui doivent répondre à une vraie intention utilisateur ;
+• les FAQ à garder seulement si elles ne doublonnent pas les H2 ;
+• les mots-clés prioritaires à intégrer naturellement ;
+• les références juridiques utiles à citer ou à regrouper en bas d'article.
 
-________________________________________
-2) Ce que les concurrents abordent mieux
-Liste uniquement les éléments vraiment utiles que les concurrents traitent mieux :
-• points juridiques absents ;
-• conditions, exceptions, délais ou démarches oubliés ;
-• risques concrets non expliqués ;
-• exemples ou cas pratiques plus utiles ;
-• références légales pertinentes ;
-• structure plus claire ou plus extractible.
-
-Pour chaque point, indique :
-• pourquoi c'est utile pour le lecteur ;
-• si c'est high intent avocat ;
-• où l'ajouter dans l'article.
-
-________________________________________
-3) Parties à supprimer, fusionner ou raccourcir
-Repère les répétitions et les passages faibles :
-• phrases qui répètent l'introduction ;
-• H2/H3 redondants ;
-• blocs “À retenir” ou conclusions qui répètent déjà l'article ;
-• infos datées, floues ou juridiquement risquées ;
-• paragraphes trop longs à transformer en listes.
-
-Donne une décision claire : Supprimer / Fusionner / Réécrire / Garder.
-
-________________________________________
-4) Nouvelle structure Hn recommandée
-Propose une structure complète H1/H2/H3, en évitant les doublons.
-Chaque H2 en question doit avoir une réponse directe prévue dès la première phrase.
-Intègre si pertinent :
-• définition ;
-• conditions ;
-• procédure étape par étape ;
-• rôle de l'avocat ;
-• rôle de l'administration / tribunal / notaire selon le pays ;
-• coûts, délais, exceptions ;
-• cas particuliers ;
-• FAQ ;
-• règles juridiques à vérifier / cadre légal.
-
-________________________________________
-5) Recommandations de réécriture par section
-Pour chaque section importante, donne :
-• objectif de la section ;
-• angle à adopter ;
-• éléments juridiques à intégrer ;
-• format conseillé : paragraphe court, liste, tableau, FAQ, CTA ;
-• CTA ou lien interne éventuel.
-
-________________________________________
-6) FAQ recommandée
-Propose uniquement les FAQ utiles, sans répéter les H2.
-Pour chaque FAQ :
-• indique si elle est déjà traitée dans l'article ;
-• décision : garder / supprimer / fusionner ;
-• réponse courte et directe si elle doit être gardée.
-
-________________________________________
-7) Références juridiques
-Indique les références officielles à citer :
-• celles à mentionner dans le corps du texte ;
-• celles à mettre seulement en bas dans une section dédiée ;
-• le titre conseillé pour la section finale, en évitant un style trop “service public”.
-
-________________________________________
-8) Checklist finale helpful content
-Vérifie que la future version :
-• répond vite à la question principale ;
-• aide réellement le justiciable ;
-• couvre les risques, démarches, délais et exceptions ;
-• explique quand consulter un avocat ;
-• évite les répétitions ;
-• reste humain, clair et juridiquement sûr ;
-• est meilleure que les concurrents sans les copier.${extraBlock}`;
+Puis donne uniquement le résultat final dans le FORMAT DE RÉPONSE OBLIGATOIRE.`;
     }
 
-    function tmplSEO({title, market, content, comps, extra}){
+    function tmplSEO({title, market, content, comps, extra, userSignals}){
       const extraBlock = formatExtra(extra);
-      return `✅ PROMPT — OPTIMISATION SEO/GEO (RETOUCHES CIBLÉES, SANS RÉÉCRITURE TOTALE)
+      const userSignalsBlock = formatUserSignals(userSignals);
+      return `✅ PROMPT — AUDIT OPTIMISATION SEO/GEO (RETOUCHES ARTICLE JURIDIQUE JUSTIFIT)
 
 Tu agis comme un expert senior en SEO, GEO, rédaction juridique et optimisation de contenus Justifit.
-Objectif : proposer uniquement les retouches essentielles pour améliorer l'article existant sans tout réécrire.
-Si l'article doit vraiment être réécrit totalement, commence par : “⚠️ À réécrire totalement” puis donne 3 raisons précises.
+Objectif : produire un audit de retouches clair, précis et directement exploitable par les rédacteurs pour améliorer l'article existant sans tout réécrire, sauf si la réécriture totale est indispensable.
 
 Marché juridique : ${market || 'Non précisé'}
 
 ${commonRules()}
 
+${humanWritingRules()}
+
+${seoOutputFormat()}
+
 ________________________________________
-🔍 Article à optimiser
+🔍 Article Justifit à optimiser
 Titre : ${title || '(sans titre)'}
 Contenu :
 ${content || '(vide)'}
@@ -478,78 +524,25 @@ ________________________________________
 📎 Concurrents / références à dépasser
 ${comps}
 
+${extraBlock}${userSignalsBlock}
 ________________________________________
-1) Diagnostic en 5 lignes maximum
-• Problème principal SEO/GEO
-• Problème principal juridique
-• Problème principal UX/lecture
-• Problème principal conversion avocat
-• Opportunité prioritaire
+🎯 Consignes d'analyse avant de produire le format final
+Analyse discrètement :
+• les retouches prioritaires à faire sur l'article existant ;
+• les sections à supprimer, fusionner, déplacer ou raccourcir ;
+• les phrases qui ne répondent pas vraiment au H2 ou qui tournent en rond ;
+• les répétitions entre introduction, H2, FAQ, conclusion et blocs récapitulatifs ;
+• les H2 à renommer pour être plus SEO/GEO ;
+• les réponses qui doivent être reformulées pour être plus directes, plus humaines et plus extractibles ;
+• les points juridiques manquants, imprécis, datés ou risqués ;
+• les opportunités high intent avocat ;
+• les signaux forums/Reddit à transformer en FAQ ou angles de réassurance ;
+• les FAQ réellement utiles, sans doublon avec les H2 ;
+• les mots-clés prioritaires à intégrer naturellement.
 
-________________________________________
-2) Actions prioritaires — maximum 12
-Donne une liste ultra concrète, classée par priorité.
-Pour chaque action :
-• Section concernée ;
-• Problème détecté ;
-• Correction exacte à faire ;
-• Impact attendu : SEO / GEO / juridique / conversion.
+Si l'article est vraiment à réécrire totalement, commence le champ “Problème principal” par : ⚠️ À réécrire totalement — puis donne 2 à 3 raisons courtes.
 
-________________________________________
-3) Répétitions et suppressions
-Liste les passages à supprimer, fusionner ou raccourcir :
-• intro qui répète un H2 ;
-• FAQ qui répète une section ;
-• conclusion ou points clés inutiles ;
-• références juridiques trop lourdes ;
-• phrases datées ou risquées.
-
-Réponds au format :
-• Passage : …
-• Décision : Supprimer / Fusionner / Réécrire / Garder
-• Pourquoi : …
-
-________________________________________
-4) Optimisation des H2/H3
-Pour chaque H2 important :
-• vérifier s'il répond à une vraie intention ;
-• proposer une version plus SEO/GEO si nécessaire ;
-• indiquer la première phrase idéale si le H2 est une question ;
-• éviter toute répétition avec l'introduction.
-
-________________________________________
-5) Amélioration des passages clés
-Réécris seulement les passages nécessaires :
-• introduction si elle n'est pas directe ;
-• H2/H3 trop faibles ;
-• CTA avocat ;
-• FAQ ;
-• section références juridiques.
-
-Contraintes : style humain, paragraphes courts, listes à puces si utile.
-
-________________________________________
-6) FAQ
-À partir des questions associées ou du contenu :
-• dire quelles FAQ garder ;
-• dire lesquelles supprimer car déjà traitées ;
-• proposer des réponses courtes, directes, non répétitives ;
-• ajouter un lien interne seulement après une réponse utile.
-
-________________________________________
-7) Références juridiques
-Recommander :
-• les lois/références à citer dans le corps ;
-• celles à regrouper en bas ;
-• le meilleur titre de section selon l'angle de l'article.
-
-________________________________________
-8) Résultat attendu
-Termine par un résumé :
-• Ce qu'on gagne face aux concurrents ;
-• Ce qui devient plus high intent ;
-• Ce qui devient plus helpful ;
-• Ce qui devient plus extractible pour le GEO.${extraBlock}`;
+Puis donne uniquement le résultat final dans le FORMAT DE RÉPONSE OBLIGATOIRE.`;
     }
 
     // ====== Génération ======
@@ -559,12 +552,13 @@ Termine par un résumé :
       const market = els.market.value;
       const content = els.articleContent.value.trim();
       const extra = els.extra.value;
+      const userSignals = els.userSignals.value;
 
       if(!title) showToast('Ajoute au moins un titre pour cadrer l’analyse.');
       if(content.length < 200) showToast('Le contenu est très court : vise ≥ 400 caractères pour une analyse pertinente.');
 
       const comps = buildCompetitorsText();
-      const payload = { title, market, content, comps, extra };
+      const payload = { title, market, content, comps, extra, userSignals };
       const out = (mode === 'seo') ? tmplSEO(payload) : tmplRewrite(payload);
       els.output.textContent = out;
       document.getElementById('outputHead').scrollIntoView({behavior:'smooth', block:'center'});
@@ -599,6 +593,7 @@ Termine par un résumé :
       els.market.value = 'Non précisé';
       els.articleContent.value = '';
       els.extra.value = '';
+      els.userSignals.value = '';
       els.output.textContent = '';
       els.concurrentsContainer.innerHTML = '';
       competitorCount = 0;
